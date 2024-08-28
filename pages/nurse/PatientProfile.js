@@ -12,10 +12,9 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Header from '../../components/Header';
-import NavBar from '../components/NavBar';
+import NavBar from '../../components/NavBar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { format } from 'date-fns';
 
 const PatientProfile = () => {
   const navigation = useNavigation();
@@ -48,7 +47,7 @@ const PatientProfile = () => {
         id: 3,
         title: 'Karaoke Night',
         time: '8:00 PM - 10:00 PM',
-        image: require('../assets/karaoke.png')
+        image: require('../../assets/activity/karaoke.png')
       }
     ],
     'Tue Apr 16 2024 18:00:00 GMT-0500': [
@@ -75,7 +74,7 @@ const PatientProfile = () => {
     dateTime: new Date(),
     title: '',
     time: '',
-    image: require('../assets/breakfast.jpg')
+    image: require('../../assets/activity/breakfast.jpg')
   });
 
   const formatTimeRange = (startDate, durationMinutes = 30) => {
@@ -153,8 +152,8 @@ const PatientProfile = () => {
 
   return (
     <View style={styles.fullScreenContainer}>
-      <PatientHeader
-        patientName={patientName}
+      <Header
+        headerName={patientName}
         leftIconName={'grid'}
         rightIconName={'person-circle-outline'}
       />

@@ -25,7 +25,7 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Start"
-        screenOptions={{ headerShown: false, animation: 'fade' }}>
+        screenOptions={{ headerShown: false, animation: 'default' }}>
         <Stack.Screen name="Start" component={Start} />
         <Stack.Screen name="StaffLogin" component={StaffLogin} />
         <Stack.Screen name="FamilyLogin" component={FamilyLogin} />
