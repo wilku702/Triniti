@@ -1,13 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
+import { Color } from '../GlobalStyles';
 
 const NavBar = ({ navigation, patientName, specialIcon }) => {
-  const defaultColor = '#88b3ee'; // blue
-  const specialColor = '#056EEC'; // dark blue
-
   const getIconColor = (iconName) => {
-    return iconName === specialIcon ? specialColor : defaultColor;
+    return iconName === specialIcon ? Color.navActive : Color.navDefault;
   };
 
   return (
@@ -47,15 +45,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-
     width: '100%',
     height: '12%',
-
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Color.colorWhite,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-
-    shadowColor: '#000',
+    shadowColor: Color.colorBlack,
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 10

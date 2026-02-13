@@ -4,25 +4,60 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet
+  StyleSheet,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../context/AuthContext';
+import { Color, FontFamily } from '../../GlobalStyles';
 
 const StaffLogin = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleLogin = async () => {
-    navigation.navigate('Dashboard');
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Missing Fields', 'Please enter both email and password.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await login(email.trim(), password);
+    } catch (error) {
+      let message = 'An unexpected error occurred. Please try again.';
+      switch (error.code) {
+        case 'auth/invalid-email':
+          message = 'Please enter a valid email address.';
+          break;
+        case 'auth/user-not-found':
+          message = 'No account found with this email.';
+          break;
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          message = 'Incorrect password. Please try again.';
+          break;
+        case 'auth/too-many-requests':
+          message = 'Too many failed attempts. Please try again later.';
+          break;
+        case 'auth/network-request-failed':
+          message = 'Network error. Please check your connection.';
+          break;
+      }
+      Alert.alert('Login Failed', message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleForgotPassword = () => {
-    console.log('Forgot Password');
+    Alert.alert('Coming Soon', 'Password reset will be available in a future update.');
   };
 
   const handleCreateAccount = () => {
-    console.log('Create Account');
+    Alert.alert('Coming Soon', 'Account creation will be available in a future update.');
   };
 
   return (
@@ -30,10 +65,12 @@ const StaffLogin = () => {
       <Text style={styles.title}>Staff Login</Text>
       <TextInput
         style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
         autoCapitalize="none"
+        keyboardType="email-address"
+        editable={!loading}
       />
       <TextInput
         style={styles.input}
@@ -41,9 +78,17 @@ const StaffLogin = () => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        editable={!loading}
       />
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Login</Text>
+      <TouchableOpacity
+        style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+        onPress={handleLogin}
+        disabled={loading}>
+        {loading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={styles.loginButtonText}>Login</Text>
+        )}
       </TouchableOpacity>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleForgotPassword}>
@@ -63,10 +108,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: 'white'
+    backgroundColor: Color.colorWhite
   },
   title: {
     fontSize: 24,
+    fontFamily: FontFamily.nunitoBold,
     fontWeight: 'bold',
     marginBottom: 30
   },
@@ -75,21 +121,26 @@ const styles = StyleSheet.create({
     height: 50,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: Color.colorBlack,
     borderRadius: 5,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    fontFamily: FontFamily.nunitoRegular
   },
   loginButton: {
     width: '100%',
-    backgroundColor: '#007AFF',
+    backgroundColor: Color.buttonBlue,
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
     marginBottom: 20
   },
+  loginButtonDisabled: {
+    opacity: 0.7
+  },
   loginButtonText: {
-    color: 'white',
+    color: Color.colorWhite,
     fontSize: 18,
+    fontFamily: FontFamily.nunitoBold,
     fontWeight: 'bold'
   },
   buttonContainer: {
@@ -98,8 +149,9 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   linkText: {
-    // color: 'blue',
-    textDecorationLine: 'underline'
+    color: Color.blue,
+    textDecorationLine: 'underline',
+    fontFamily: FontFamily.nunitoRegular
   }
 });
 

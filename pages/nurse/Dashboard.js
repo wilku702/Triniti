@@ -1,37 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, TextInput } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  Text,
+  ActivityIndicator
+} from 'react-native';
 import Header from '../../components/Header';
 import PatientButton from '../../components/PatientButton';
 import { useNavigation } from '@react-navigation/native';
 import { db } from '../../Firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import { Color } from '../../GlobalStyles';
+import { Color, FontFamily } from '../../GlobalStyles';
 
 const Dashboard = () => {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
   const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPatients = async () => {
-      console.log('hi');
-      const querySnapshot = await getDocs(collection(db, 'users'));
-      const patientList = querySnapshot.docs.map((doc) => ({
-        name: doc.data().name,
-        image: doc.data().image
-      }));
-      setPatients(patientList);
+      try {
+        setLoading(true);
+        setError(null);
+        const querySnapshot = await getDocs(collection(db, 'users'));
+        const patientList = querySnapshot.docs.map((doc) => ({
+          name: doc.data().name || 'Unknown',
+          image: doc.data().image
+        }));
+        setPatients(patientList);
+      } catch (err) {
+        setError('Failed to load patients. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchPatients();
   }, []);
 
   const filteredPatients = patients.filter((patient) =>
-    patient.name.toLowerCase().includes(searchQuery.toLowerCase())
+    (patient.name || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const onPatientPress = (patientName) => {
-    console.log('Pressed:', patientName);
     navigation.navigate('PatientProfile', { patientName });
   };
 
@@ -57,16 +72,40 @@ const Dashboard = () => {
                 onChangeText={handleSearch}
               />
             </View>
-            <View style={styles.patientButtonContainer}>
-              {filteredPatients.map((patient, index) => (
-                <PatientButton
-                  key={index}
-                  patientName={patient.name}
-                  image={patient.image}
-                  onPress={() => onPatientPress(patient.name)}
-                />
-              ))}
-            </View>
+
+            {loading && (
+              <View style={styles.centerContent}>
+                <ActivityIndicator size="large" color={Color.blue} />
+                <Text style={styles.loadingText}>Loading patients...</Text>
+              </View>
+            )}
+
+            {error && !loading && (
+              <View style={styles.centerContent}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            )}
+
+            {!loading && !error && filteredPatients.length === 0 && (
+              <View style={styles.centerContent}>
+                <Text style={styles.emptyText}>
+                  {searchQuery ? 'No patients match your search.' : 'No patients found.'}
+                </Text>
+              </View>
+            )}
+
+            {!loading && !error && filteredPatients.length > 0 && (
+              <View style={styles.patientButtonContainer}>
+                {filteredPatients.map((patient, index) => (
+                  <PatientButton
+                    key={index}
+                    patientName={patient.name}
+                    image={patient.image}
+                    onPress={() => onPatientPress(patient.name)}
+                  />
+                ))}
+              </View>
+            )}
           </ScrollView>
         </View>
       </View>
@@ -80,10 +119,10 @@ const styles = StyleSheet.create({
     flex: 1
   },
   patientContainerShadow: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: Color.lightGray,
     borderRadius: 45,
     flex: 1,
-    shadowColor: 'black',
+    shadowColor: Color.colorBlack,
     shadowOpacity: 0.4,
     shadowRadius: 6
   },
@@ -92,15 +131,20 @@ const styles = StyleSheet.create({
     height: '100%',
     overflow: 'hidden'
   },
+  searchBarContainer: {
+    width: '100%',
+    alignItems: 'center'
+  },
   searchBar: {
     height: 40,
-    width: 372,
+    width: '90%',
     marginTop: 40,
     marginBottom: 16,
     borderWidth: 1.2,
-    borderColor: '#000',
+    borderColor: Color.colorBlack,
     borderRadius: 12,
-    paddingLeft: 10
+    paddingLeft: 10,
+    fontFamily: FontFamily.nunitoRegular
   },
   patientsScrollContainer: {
     flexDirection: 'row',
@@ -114,6 +158,31 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     marginBottom: 40,
     width: '100%'
+  },
+  centerContent: {
+    width: '100%',
+    alignItems: 'center',
+    paddingTop: 40
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    fontFamily: FontFamily.nunitoRegular,
+    color: Color.textGray
+  },
+  errorText: {
+    fontSize: 16,
+    fontFamily: FontFamily.nunitoRegular,
+    color: '#E53935',
+    textAlign: 'center',
+    paddingHorizontal: 20
+  },
+  emptyText: {
+    fontSize: 16,
+    fontFamily: FontFamily.nunitoRegular,
+    color: Color.textGray,
+    textAlign: 'center',
+    paddingHorizontal: 20
   }
 });
 

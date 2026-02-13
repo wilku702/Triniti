@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx expo start:*)",
+      "Bash(npx expo install:*)",
+      "Bash",
+      "Bash(xcrun simctl boot:*)",
+      "Bash(xcrun simctl openurl:*)",
+      "Bash(xcrun simctl io:*)",
+      "Bash(xcrun simctl list:*)",
+      "Bash(xcrun simctl shutdown:*)",
+      "Bash(open:*)",
+      "Bash(EXPO_DEVICE_ID=2DC5E5DE-7E2F-42D4-82AB-4A41A345A966 npx expo start:*)",
+      "Bash(grep:*)",
+      "Bash(npm uninstall:*)"
+    ]
+  }
+}

@@ -96,8 +96,8 @@ const PatientProfile = () => {
     });
   };
 
-  const [datePickerVisible, setDatePickerVisible] = useState(true);
-  const [timePickerVisible, setTimePickerVisible] = useState(true);
+  const datePickerVisible = true;
+  const timePickerVisible = true;
 
   const getFirstName = (fullName) => {
     return fullName.split(' ')[0];
@@ -228,7 +228,8 @@ const PatientProfile = () => {
                           activityDocumentId: activity.id,
                           activityTitle: activity.title,
                           activityTime: activity.time,
-                          activityPhotoUri: activity.photo // Assuming 'activity.photo' is the URI or require statement for the image
+                          activityImage: activity.image,
+                          patientName: patientName
                         })
                       }>
                       {activity.image && (
@@ -264,14 +265,14 @@ const PatientProfile = () => {
 const styles = StyleSheet.create({
   fullScreenContainer: {
     flex: 1,
-    backgroundColor: '#2f6be4'
+    backgroundColor: Color.blue
   },
 
   activityContainer: {
     flex: 1,
     borderRadius: 40,
 
-    shadowColor: 'black',
+    shadowColor: Color.colorBlack,
     shadowOpacity: 0.4,
     shadowRadius: 6
   },
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
   scrollBody: {
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    backgroundColor: 'white'
+    backgroundColor: Color.colorWhite
   },
 
   scheduleTitle: {
@@ -321,12 +322,12 @@ const styles = StyleSheet.create({
   activityTitle: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#333',
+    color: Color.textDark,
     paddingBottom: 5
   },
   activityTime: {
     fontSize: 14,
-    color: '#666'
+    color: Color.textGray
   },
   activityContainerPosts: {
     marginTop: 10,
@@ -338,7 +339,7 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 20,
     bottom: 105,
-    backgroundColor: '#2f6be4',
+    backgroundColor: Color.blue,
     width: 61,
     height: 61,
     borderRadius: 32,
@@ -353,12 +354,12 @@ const styles = StyleSheet.create({
   },
   dateHeader: {
     fontSize: 18,
-    color: 'grey',
+    color: Color.textGray,
     paddingBottom: 5
   },
   divider: {
     height: 2,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: Color.dividerGray,
     marginBottom: 10,
     marginTop: 10
   },
@@ -381,30 +382,37 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   input: {
-    width: 300,
+    width: '80%',
     height: 40,
     marginBottom: 12,
     borderWidth: 1,
-    padding: 10
+    borderColor: Color.dividerGray,
+    borderRadius: 8,
+    padding: 10,
+    fontFamily: FontFamily.nunitoRegular
   },
 
   prompt: {
     fontSize: 16,
-    color: '#333',
+    color: Color.textDark,
     marginBottom: 5,
+    fontFamily: FontFamily.nunitoBold,
     fontWeight: 'bold'
   },
   dateDisplay: {
-    width: 300,
+    width: '80%',
     height: 40,
-    lineHeight: 40, // Center text vertically
+    lineHeight: 40,
     borderWidth: 1,
+    borderColor: Color.dividerGray,
+    borderRadius: 8,
     padding: 10,
     textAlign: 'center',
     marginBottom: 12,
-    color: '#333',
+    color: Color.textDark,
     fontSize: 16,
-    backgroundColor: '#fff' // Ensure background is white for visibility
+    fontFamily: FontFamily.nunitoRegular,
+    backgroundColor: Color.colorWhite
   }
 });
 

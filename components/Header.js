@@ -14,7 +14,7 @@ const Header = ({ headerName, leftIconName, rightIconName }) => {
           style={styles.leftIcon}
           name={leftIconName}
           size={32}
-          color="white"
+          color={Color.colorWhite}
         />
       </TouchableOpacity>
 
@@ -25,7 +25,7 @@ const Header = ({ headerName, leftIconName, rightIconName }) => {
           style={styles.rightIcon}
           name={rightIconName}
           size={40}
-          color="white"
+          color={Color.colorWhite}
         />
       </TouchableOpacity>
     </View>
@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10
   },
-
   headerTitle: {
     fontSize: 34,
     fontFamily: FontFamily.nunitoBold,

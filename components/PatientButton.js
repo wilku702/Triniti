@@ -1,10 +1,9 @@
 import React from 'react';
 import { Image } from 'expo-image';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
-import { Color } from '../GlobalStyles';
+import { Color, FontFamily } from '../GlobalStyles';
 
 const PatientButton = ({ onPress, patientName, image }) => {
-  console.log(image);
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
       <View style={styles.topSection}>
@@ -19,14 +18,12 @@ const PatientButton = ({ onPress, patientName, image }) => {
 
 const styles = StyleSheet.create({
   button: {
-    borderColor: '#000',
+    borderColor: Color.colorBlack,
     borderRadius: 12,
-
     margin: '3%',
     width: '42%',
     height: 120,
-    backgroundColor: '#fff',
-
+    backgroundColor: Color.colorWhite,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -41,21 +38,20 @@ const styles = StyleSheet.create({
   },
   topSection: {
     flex: 1,
-    backgroundColor: '#7CB3F3',
-
+    backgroundColor: Color.patientCardBlue,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12
   },
   bottomSection: {
     height: 40,
-    backgroundColor: '#fff',
+    backgroundColor: Color.colorWhite,
     justifyContent: 'center',
-
     borderRadius: 12
   },
   text: {
     left: 10,
     fontSize: 16,
+    fontFamily: FontFamily.nunitoMedium,
     fontWeight: '600'
   }
 });

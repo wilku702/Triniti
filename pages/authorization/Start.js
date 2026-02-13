@@ -1,8 +1,16 @@
 import * as React from 'react';
 import { Image } from 'expo-image';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Dimensions
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Border, Color, FontFamily, FontSize } from '../../GlobalStyles';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const StartPage = ({ navigation }) => {
   const handleStaffLoginPress = () => {
@@ -24,7 +32,7 @@ const StartPage = ({ navigation }) => {
         <LinearGradient
           style={styles.screenBodyContentChild}
           locations={[0, 1]}
-          colors={['#2e88f3', '#056eec']}
+          colors={[Color.gradientStart, Color.gradientEnd]}
         />
         <Image
           style={styles.whitelogoIcon}
@@ -34,137 +42,99 @@ const StartPage = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={[styles.familyLoginButton, styles.loginLayout]}
-        locations={[0.61, 1]}
-        colors={['#fff', '#f3f3f3']}
         onPress={handleFamilyLoginPress}>
-        <Text style={[styles.familyLogin, styles.loginPosition]}>
-          Family Login
-        </Text>
+        <Text style={styles.loginText}>Family Login</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.staffLoginButton, styles.loginLayout]}
-        locations={[0.61, 1]}
-        colors={['#fff', '#f3f3f3']}
         onPress={handleStaffLoginPress}>
-        <Text style={[styles.staffLogin, styles.loginPosition]}>
-          Staff Login
-        </Text>
+        <Text style={styles.loginText}>Staff Login</Text>
       </TouchableOpacity>
-      <Text style={[styles.welcome, styles.loginPosition]}>Welcome</Text>
+      <Text style={styles.welcome}>Welcome</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  loginLayout: {
-    borderRadius: Border.br_mini,
-    width: '51.86%',
-    height: '5.69%',
-    position: 'absolute',
+  startPage: {
+    backgroundColor: Color.colorWhite,
+    flex: 1,
     overflow: 'hidden',
-    backgroundColor: 'white'
-  },
-  loginPosition: {
-    textAlign: 'center',
-    left: '50%',
-    position: 'absolute'
+    width: '100%'
   },
   nursingHomeBro1: {
     top: 0,
     left: 0,
-    height: 430,
-    width: 430,
+    height: SCREEN_WIDTH,
+    width: SCREEN_WIDTH,
     position: 'absolute',
     overflow: 'hidden'
   },
+  screenBodyContent: {
+    position: 'absolute',
+    top: SCREEN_HEIGHT * 0.375,
+    left: 0,
+    right: 0,
+    bottom: 0
+  },
   screenBodyContentChild: {
-    height: '96.5%',
-    top: '3.62%',
-    right: '0%',
-    bottom: '-0.12%',
-    left: '0%',
+    position: 'absolute',
+    top: '3.5%',
+    left: 0,
+    right: 0,
+    bottom: 0,
     shadowColor: 'rgba(0, 0, 0, 0.1)',
-    shadowOffset: {
-      width: 0,
-      height: -4
-    },
+    shadowOffset: { width: 0, height: -4 },
     shadowRadius: 8,
     elevation: 8,
     shadowOpacity: 1,
     borderTopLeftRadius: Border.br_21xl,
     borderTopRightRadius: Border.br_21xl,
-    backgroundColor: Color.whiteGradient,
-    position: 'absolute',
-    width: '100%'
+    backgroundColor: Color.colorWhite
   },
   whitelogoIcon: {
-    height: '8.06%',
-    width: '34.19%',
-    top: '84.73%',
-    right: '32.79%',
-    bottom: '7.2%',
-    left: '33.02%',
+    position: 'absolute',
+    bottom: '7%',
+    left: '33%',
+    width: '34%',
+    height: '8%',
     maxWidth: '100%',
     maxHeight: '100%',
-    position: 'absolute',
     overflow: 'hidden'
   },
-  screenBodyContent: {
-    marginLeft: -215,
-    top: 349,
-    height: 583,
-    left: '50%',
-    width: 430,
-    position: 'absolute'
+  loginLayout: {
+    borderRadius: Border.br_mini,
+    width: '52%',
+    height: 48,
+    position: 'absolute',
+    alignSelf: 'center',
+    left: '24%',
+    overflow: 'hidden',
+    backgroundColor: Color.colorWhite,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  familyLogin: {
-    marginLeft: -46.5,
+  loginText: {
     color: Color.colorBlack,
     fontFamily: FontFamily.nunitoMedium,
     fontWeight: '500',
     fontSize: FontSize.size_base,
-    top: '50%',
-    marginTop: -10.5,
-    textAlign: 'center'
-  },
-  familyLoginButton: {
-    top: '67.7%',
-    right: '23.72%',
-    bottom: '26.61%',
-    left: '24.42%'
-  },
-  staffLogin: {
-    marginLeft: -39.5,
-    color: Color.colorBlack,
-    fontFamily: FontFamily.nunitoMedium,
-    fontWeight: '500',
-    fontSize: FontSize.size_base,
-    top: '50%',
-    marginTop: -10.5,
     textAlign: 'center'
   },
   staffLoginButton: {
-    backgroundColor: 'white',
-    top: '60.19%',
-    right: '23.95%',
-    bottom: '34.12%',
-    left: '24.19%'
+    top: '60%'
+  },
+  familyLoginButton: {
+    top: '68%'
   },
   welcome: {
-    marginLeft: -128,
-    top: 478,
-    fontSize: 48,
+    position: 'absolute',
+    top: SCREEN_HEIGHT * 0.51,
+    alignSelf: 'center',
+    fontSize: FontSize.size_welcome,
     fontFamily: FontFamily.nunitoRegular,
     color: Color.colorWhite,
-    width: 256,
-    height: 66
-  },
-  startPage: {
-    backgroundColor: Color.colorWhite,
-    flex: 1,
-    height: 932,
-    overflow: 'hidden',
-    width: '100%'
+    textAlign: 'center'
   }
 });
 
