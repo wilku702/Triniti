@@ -68,7 +68,7 @@ export const PATIENTS = [
 // ---------------------------------------------------------------------------
 // ACTIVITY IMAGE URLS — reusable across patients
 // ---------------------------------------------------------------------------
-const IMG = {
+export const IMG = {
   reading: { uri: 'https://images.pexels.com/photos/1389429/pexels-photo-1389429.jpeg?auto=compress&cs=tinysrgb&w=400' },
   birthday: { uri: 'https://images.pexels.com/photos/18459203/pexels-photo-18459203/free-photo-of-caregiver-serving-food-for-elderly-people-in-retirement-house.jpeg?auto=compress&cs=tinysrgb&w=400' },
   breakfast: { uri: 'https://images.pexels.com/photos/18429461/pexels-photo-18429461.jpeg?auto=compress&cs=tinysrgb&w=400' },

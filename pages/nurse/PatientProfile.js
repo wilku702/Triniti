@@ -7,8 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Modal,
-  TextInput,
-  Button
+  TextInput
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Header from '../../components/Header';
@@ -16,24 +15,40 @@ import NavBar from '../../components/NavBar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Color, FontFamily } from '../../GlobalStyles';
-import { ACTIVITIES, DEFAULT_ACTIVITIES } from '../../data/fakeData';
+import { ACTIVITIES, DEFAULT_ACTIVITIES, IMG } from '../../data/fakeData';
+
+const CATEGORY_OPTIONS = [
+  { label: 'Yoga', icon: 'self-improvement', image: IMG.yoga },
+  { label: 'Reading', icon: 'menu-book', image: IMG.reading },
+  { label: 'Music', icon: 'music-note', image: IMG.music },
+  { label: 'Games', icon: 'extension', image: IMG.games },
+  { label: 'Painting', icon: 'palette', image: IMG.painting },
+  { label: 'Walking', icon: 'directions-walk', image: IMG.walking },
+  { label: 'Crafts', icon: 'content-cut', image: IMG.crafts },
+  { label: 'Garden', icon: 'local-florist', image: IMG.garden },
+  { label: 'Meal', icon: 'restaurant', image: IMG.breakfast },
+  { label: 'Movie', icon: 'movie', image: IMG.movie }
+];
 
 export const PatientProfileContent = ({ patientName, navigation }) => {
-
-  const handleCancelAddActivity = () => {
-    setModalVisible(false);
-  };
 
   const [activitiesGroupedByDate, setActivitiesGroupedByDate] = useState(
     ACTIVITIES[patientName] || DEFAULT_ACTIVITIES
   );
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [newActivity, setNewActivity] = useState({
     dateTime: new Date(),
     title: '',
     time: '',
-    image: require('../../assets/activity/breakfast.jpg')
+    image: IMG.defaultImg
   });
+
+  const handleCancelAddActivity = () => {
+    setModalVisible(false);
+    setSelectedCategory(null);
+    setNewActivity({ dateTime: new Date(), title: '', time: '', image: IMG.defaultImg });
+  };
 
   const formatTimeRange = (startDate, durationMinutes = 30) => {
     const endDate = new Date(startDate.getTime() + durationMinutes * 60000);
@@ -54,8 +69,8 @@ export const PatientProfileContent = ({ patientName, navigation }) => {
     });
   };
 
-  const datePickerVisible = true;
-  const timePickerVisible = true;
+  const today = new Date();
+  const todayStr = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toString();
 
   const getFirstName = (fullName) => {
     return fullName.split(' ')[0];
@@ -106,6 +121,13 @@ export const PatientProfileContent = ({ patientName, navigation }) => {
     }
     setActivitiesGroupedByDate(newActivities);
     setModalVisible(false);
+    setSelectedCategory(null);
+    setNewActivity({ dateTime: new Date(), title: '', time: '', image: IMG.defaultImg });
+  };
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category.label);
+    setNewActivity((prev) => ({ ...prev, image: category.image }));
   };
 
   return (
@@ -114,42 +136,110 @@ export const PatientProfileContent = ({ patientName, navigation }) => {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(!modalVisible)}>
-        <View style={styles.centeredView}>
+        onRequestClose={handleCancelAddActivity}>
+        <View style={styles.modalOverlay}>
           <View style={styles.modalView}>
-            <Text style={styles.prompt}>Activity Title</Text>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>New Activity</Text>
+              <TouchableOpacity onPress={handleCancelAddActivity} style={styles.closeButton}>
+                <MaterialIcons name="close" size={24} color={Color.textGray} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.fieldRow}>
+              <MaterialIcons name="edit" size={20} color={Color.blue} />
+              <Text style={styles.fieldLabel}>Activity Title</Text>
+            </View>
             <TextInput
-              style={styles.input}
+              style={styles.modalInput}
               onChangeText={(text) =>
                 setNewActivity((prev) => ({ ...prev, title: text }))
               }
-              placeholder="Activity title"
+              placeholder="e.g. Morning Yoga, Reading Circle..."
+              placeholderTextColor={Color.dividerGray}
               value={newActivity.title}
             />
-            <Text style={styles.prompt}>Time</Text>
-            {timePickerVisible && (
-              <DateTimePicker
-                value={newActivity.dateTime}
-                mode="time"
-                display="default"
-                onChange={handleDateChange}
-              />
-            )}
-            <Text style={styles.prompt}>Date</Text>
-            {datePickerVisible && (
-              <DateTimePicker
-                value={newActivity.dateTime}
-                mode="date"
-                display="default"
-                onChange={handleDateChange}
-              />
-            )}
-            <Button title="Add Activity" onPress={handleAddActivity} />
-            <Button
-              title="Cancel"
-              color="red"
-              onPress={handleCancelAddActivity}
-            />
+
+            <View style={styles.fieldRow}>
+              <MaterialIcons name="category" size={20} color={Color.blue} />
+              <Text style={styles.fieldLabel}>Category</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.categoryScroll}
+              contentContainerStyle={styles.categoryScrollContent}>
+              {CATEGORY_OPTIONS.map((cat) => (
+                <TouchableOpacity
+                  key={cat.label}
+                  style={[
+                    styles.categoryOption,
+                    selectedCategory === cat.label && styles.categoryOptionSelected
+                  ]}
+                  onPress={() => handleCategorySelect(cat)}>
+                  <MaterialIcons
+                    name={cat.icon}
+                    size={24}
+                    color={selectedCategory === cat.label ? Color.blue : Color.textGray}
+                  />
+                  <Text
+                    style={[
+                      styles.categoryLabel,
+                      selectedCategory === cat.label && styles.categoryLabelSelected
+                    ]}>
+                    {cat.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <View style={styles.pickerRow}>
+              <View style={styles.pickerSection}>
+                <View style={styles.fieldRow}>
+                  <MaterialIcons name="access-time" size={20} color={Color.blue} />
+                  <Text style={styles.fieldLabel}>Time</Text>
+                </View>
+                <View style={styles.pickerWrapper}>
+                  <DateTimePicker
+                    value={newActivity.dateTime}
+                    mode="time"
+                    display="default"
+                    onChange={handleDateChange}
+                  />
+                </View>
+              </View>
+              <View style={styles.pickerSection}>
+                <View style={styles.fieldRow}>
+                  <MaterialIcons name="calendar-today" size={20} color={Color.blue} />
+                  <Text style={styles.fieldLabel}>Date</Text>
+                </View>
+                <View style={styles.pickerWrapper}>
+                  <DateTimePicker
+                    value={newActivity.dateTime}
+                    mode="date"
+                    display="default"
+                    onChange={handleDateChange}
+                  />
+                </View>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.addActivityButton,
+                !newActivity.title.trim() && styles.addActivityButtonDisabled
+              ]}
+              onPress={handleAddActivity}
+              disabled={!newActivity.title.trim()}>
+              <MaterialIcons name="add-circle-outline" size={22} color={Color.colorWhite} />
+              <Text style={styles.addActivityButtonText}>Add Activity</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleCancelAddActivity}>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -167,10 +257,21 @@ export const PatientProfileContent = ({ patientName, navigation }) => {
         </Text>
         <View style={styles.activityContainerPosts}>
           {Object.entries(activitiesGroupedByDate).map(
-            ([date, activities], index) => (
+            ([date, activities], index) => {
+              const isToday = date === todayStr;
+              return (
               <View key={date}>
                 {index !== 0 && <View style={styles.divider} />}
-                <Text style={styles.dateHeader}>{formatDate(date)}</Text>
+                <View style={styles.dateHeaderRow}>
+                  <Text style={[styles.dateHeader, isToday && styles.dateHeaderToday]}>
+                    {formatDate(date)}
+                  </Text>
+                  {isToday && (
+                    <View style={styles.todayBadge}>
+                      <Text style={styles.todayBadgeText}>Today</Text>
+                    </View>
+                  )}
+                </View>
                 {activities.map((activity) => (
                   <TouchableOpacity
                     key={activity.id}
@@ -199,7 +300,8 @@ export const PatientProfileContent = ({ patientName, navigation }) => {
                   </TouchableOpacity>
                 ))}
               </View>
-            )
+            );
+            }
           )}
         </View>
       </ScrollView>
@@ -326,10 +428,33 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     zIndex: 1
   },
+  dateHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10
+  },
   dateHeader: {
     fontSize: 18,
     color: Color.textGray,
     paddingBottom: 5
+  },
+  dateHeaderToday: {
+    color: Color.blue,
+    fontFamily: FontFamily.nunitoBold,
+    fontWeight: '600'
+  },
+  todayBadge: {
+    backgroundColor: Color.blue,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    marginBottom: 3
+  },
+  todayBadgeText: {
+    color: Color.colorWhite,
+    fontSize: 12,
+    fontFamily: FontFamily.nunitoBold,
+    fontWeight: '600'
   },
   divider: {
     height: 2,
@@ -338,55 +463,137 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
 
-  centeredView: {
+  modalOverlay: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22
+    paddingHorizontal: 20
   },
   modalView: {
-    margin: 20,
     backgroundColor: Color.colorWhite,
     borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
+    padding: 24,
     shadowColor: Color.colorBlack,
     shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8
   },
-  input: {
-    width: '80%',
-    height: 40,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: Color.dividerGray,
-    borderRadius: 8,
-    padding: 10,
-    fontFamily: FontFamily.nunitoRegular
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20
   },
-
-  prompt: {
-    fontSize: 16,
-    color: Color.textDark,
-    marginBottom: 5,
+  modalTitle: {
+    fontSize: 22,
     fontFamily: FontFamily.nunitoBold,
-    fontWeight: 'bold'
+    fontWeight: '600',
+    color: Color.textDark
   },
-  dateDisplay: {
-    width: '80%',
-    height: 40,
-    lineHeight: 40,
+  closeButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Color.lightGray,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  fieldRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8
+  },
+  fieldLabel: {
+    fontSize: 15,
+    fontFamily: FontFamily.nunitoBold,
+    fontWeight: '600',
+    color: Color.textDark
+  },
+  modalInput: {
+    width: '100%',
+    height: 48,
+    marginBottom: 18,
     borderWidth: 1,
     borderColor: Color.dividerGray,
-    borderRadius: 8,
-    padding: 10,
-    textAlign: 'center',
-    marginBottom: 12,
-    color: Color.textDark,
+    borderRadius: 10,
+    paddingHorizontal: 14,
     fontSize: 16,
     fontFamily: FontFamily.nunitoRegular,
+    color: Color.textDark,
     backgroundColor: Color.colorWhite
+  },
+  categoryScroll: {
+    marginBottom: 18,
+    maxHeight: 80
+  },
+  categoryScrollContent: {
+    gap: 10
+  },
+  categoryOption: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: Color.dividerGray,
+    minWidth: 68
+  },
+  categoryOptionSelected: {
+    borderColor: Color.blue,
+    backgroundColor: Color.blue + '12'
+  },
+  categoryLabel: {
+    fontSize: 11,
+    fontFamily: FontFamily.nunitoMedium,
+    color: Color.textGray,
+    marginTop: 4
+  },
+  categoryLabelSelected: {
+    color: Color.blue,
+    fontFamily: FontFamily.nunitoBold
+  },
+  pickerRow: {
+    flexDirection: 'row',
+    marginBottom: 24
+  },
+  pickerSection: {
+    flex: 1,
+    alignItems: 'flex-start'
+  },
+  pickerWrapper: {
+    marginLeft: -10
+  },
+  addActivityButton: {
+    backgroundColor: Color.blue,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 10
+  },
+  addActivityButtonDisabled: {
+    opacity: 0.5
+  },
+  addActivityButtonText: {
+    color: Color.colorWhite,
+    fontSize: 18,
+    fontFamily: FontFamily.nunitoBold,
+    fontWeight: '600'
+  },
+  cancelButton: {
+    padding: 12,
+    borderRadius: 12,
+    alignItems: 'center'
+  },
+  cancelButtonText: {
+    color: Color.textGray,
+    fontSize: 16,
+    fontFamily: FontFamily.nunitoMedium
   }
 });
 
