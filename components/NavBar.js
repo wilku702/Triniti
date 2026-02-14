@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
 import { Color } from '../GlobalStyles';
 
-const NavBar = ({ navigation, patientName, specialIcon, onTabChange }) => {
+const NavBar = ({ navigation, patientName, patientId, specialIcon, onTabChange }) => {
   const getIconColor = (iconName) => {
     return iconName === specialIcon ? Color.navActive : Color.navDefault;
   };
@@ -12,7 +12,7 @@ const NavBar = ({ navigation, patientName, specialIcon, onTabChange }) => {
     if (onTabChange) {
       onTabChange(tabName);
     } else {
-      navigation.navigate(routeName, { patientName });
+      navigation.navigate(routeName, { patientName, patientId });
     }
   };
 

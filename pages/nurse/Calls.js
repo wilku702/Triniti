@@ -1,22 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
 import { Color, FontFamily } from '../../GlobalStyles';
-import { APPOINTMENTS, DEFAULT_APPOINTMENTS } from '../../data/fakeData';
+import { db } from '../../Firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
-export const CallsContent = ({ patientName }) => {
-  const [appointments] = useState(
-    APPOINTMENTS[patientName] || DEFAULT_APPOINTMENTS
-  );
+export const CallsContent = ({ patientName, patientId }) => {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        setLoading(true);
+        const appointmentsRef = collection(db, 'users', patientId, 'appointments');
+        const snapshot = await getDocs(appointmentsRef);
+        const list = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setAppointments(list);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (patientId) fetchAppointments();
+  }, [patientId]);
 
   const getIconForType = (type) => {
     switch (type) {
@@ -28,6 +49,15 @@ export const CallsContent = ({ patientName }) => {
         return 'people';
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Color.blue} />
+        <Text style={styles.loadingText}>Loading appointments...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -60,7 +90,7 @@ export const CallsContent = ({ patientName }) => {
 const Calls = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { patientName } = route.params;
+  const { patientName, patientId } = route.params;
 
   return (
     <View style={styles.container}>
@@ -70,11 +100,12 @@ const Calls = () => {
         rightIconName={'person-circle-outline'}
       />
       <View style={styles.contentShadow}>
-        <CallsContent patientName={patientName} />
+        <CallsContent patientName={patientName} patientId={patientId} />
       </View>
       <NavBar
         navigation={navigation}
         patientName={patientName}
+        patientId={patientId}
         specialIcon="calendar"
       />
     </View>
@@ -104,6 +135,17 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingHorizontal: 20,
     paddingBottom: 120
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    fontFamily: FontFamily.nunitoRegular,
+    color: Color.textGray
   },
   sectionTitle: {
     fontSize: 22,

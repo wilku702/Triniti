@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { doc, deleteDoc } from 'firebase/firestore';
+import { db } from '../../Firebase';
 import Header from '../../components/Header';
 import { Color, FontFamily } from '../../GlobalStyles';
 
@@ -21,7 +23,8 @@ const Activity = () => {
     activityTitle,
     activityTime,
     activityImage,
-    patientName
+    patientName,
+    patientId
   } = route.params;
 
   const handleDelete = () => {
@@ -33,8 +36,16 @@ const Activity = () => {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => {
-            navigation.goBack();
+          onPress: async () => {
+            try {
+              await deleteDoc(
+                doc(db, 'users', patientId, 'activities', activityDocumentId)
+              );
+              navigation.goBack();
+            } catch (error) {
+              console.error('Error deleting activity:', error);
+              Alert.alert('Error', 'Failed to delete activity. Please try again.');
+            }
           }
         }
       ]

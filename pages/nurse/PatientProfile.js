@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   Image,
   Modal,
-  TextInput
+  TextInput,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Header from '../../components/Header';
@@ -15,48 +17,85 @@ import NavBar from '../../components/NavBar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Color, FontFamily } from '../../GlobalStyles';
-import { ACTIVITIES, DEFAULT_ACTIVITIES, IMG } from '../../data/fakeData';
+import { ACTIVITY_IMAGES, resolveImage } from '../../data/activityImages';
+import { db } from '../../Firebase';
+import { collection, getDocs, addDoc, query, orderBy, Timestamp } from 'firebase/firestore';
 
 const CATEGORY_OPTIONS = [
-  { label: 'Yoga', icon: 'self-improvement', image: IMG.yoga },
-  { label: 'Reading', icon: 'menu-book', image: IMG.reading },
-  { label: 'Music', icon: 'music-note', image: IMG.music },
-  { label: 'Games', icon: 'extension', image: IMG.games },
-  { label: 'Painting', icon: 'palette', image: IMG.painting },
-  { label: 'Walking', icon: 'directions-walk', image: IMG.walking },
-  { label: 'Crafts', icon: 'content-cut', image: IMG.crafts },
-  { label: 'Garden', icon: 'local-florist', image: IMG.garden },
-  { label: 'Meal', icon: 'restaurant', image: IMG.breakfast },
-  { label: 'Movie', icon: 'movie', image: IMG.movie }
+  { label: 'Yoga', icon: 'self-improvement', imageKey: 'yoga', image: ACTIVITY_IMAGES.yoga },
+  { label: 'Reading', icon: 'menu-book', imageKey: 'reading', image: ACTIVITY_IMAGES.reading },
+  { label: 'Music', icon: 'music-note', imageKey: 'music', image: ACTIVITY_IMAGES.music },
+  { label: 'Games', icon: 'extension', imageKey: 'games', image: ACTIVITY_IMAGES.games },
+  { label: 'Painting', icon: 'palette', imageKey: 'painting', image: ACTIVITY_IMAGES.painting },
+  { label: 'Walking', icon: 'directions-walk', imageKey: 'walking', image: ACTIVITY_IMAGES.walking },
+  { label: 'Crafts', icon: 'content-cut', imageKey: 'crafts', image: ACTIVITY_IMAGES.crafts },
+  { label: 'Garden', icon: 'local-florist', imageKey: 'garden', image: ACTIVITY_IMAGES.garden },
+  { label: 'Meal', icon: 'restaurant', imageKey: 'breakfast', image: ACTIVITY_IMAGES.breakfast },
+  { label: 'Movie', icon: 'movie', imageKey: 'movie', image: ACTIVITY_IMAGES.movie }
 ];
 
-export const PatientProfileContent = ({ patientName, navigation }) => {
-
-  const [activitiesGroupedByDate, setActivitiesGroupedByDate] = useState(
-    ACTIVITIES[patientName] || DEFAULT_ACTIVITIES
-  );
+export const PatientProfileContent = ({ patientName, patientId, navigation }) => {
+  const [activitiesGroupedByDate, setActivitiesGroupedByDate] = useState({});
+  const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [newActivity, setNewActivity] = useState({
     dateTime: new Date(),
     title: '',
     time: '',
-    image: IMG.defaultImg
+    imageKey: 'defaultImg',
+    image: ACTIVITY_IMAGES.defaultImg
   });
+
+  const fetchActivities = async () => {
+    try {
+      setLoading(true);
+      const activitiesRef = collection(db, 'users', patientId, 'activities');
+      const q = query(activitiesRef, orderBy('date', 'desc'));
+      const snapshot = await getDocs(q);
+
+      const grouped = {};
+      snapshot.docs.forEach((docSnap) => {
+        const data = docSnap.data();
+        const dateObj = data.date.toDate();
+        const dateKey = new Date(
+          dateObj.getFullYear(),
+          dateObj.getMonth(),
+          dateObj.getDate()
+        ).toString();
+
+        if (!grouped[dateKey]) grouped[dateKey] = [];
+        grouped[dateKey].push({
+          id: docSnap.id,
+          title: data.title,
+          time: data.time,
+          imageKey: data.imageKey,
+          image: resolveImage(data.imageKey)
+        });
+      });
+      setActivitiesGroupedByDate(grouped);
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (patientId) fetchActivities();
+  }, [patientId]);
 
   const handleCancelAddActivity = () => {
     setModalVisible(false);
     setSelectedCategory(null);
-    setNewActivity({ dateTime: new Date(), title: '', time: '', image: IMG.defaultImg });
+    setNewActivity({ dateTime: new Date(), title: '', time: '', imageKey: 'defaultImg', image: ACTIVITY_IMAGES.defaultImg });
   };
 
   const formatTimeRange = (startDate, durationMinutes = 30) => {
     const endDate = new Date(startDate.getTime() + durationMinutes * 60000);
-
     const options = { hour: 'numeric', minute: '2-digit', hour12: true };
     const startTime = startDate.toLocaleTimeString('en-US', options);
     const endTime = endDate.toLocaleTimeString('en-US', options);
-
     return `${startTime} - ${endTime}`;
   };
 
@@ -78,7 +117,6 @@ export const PatientProfileContent = ({ patientName, navigation }) => {
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || newActivity.dateTime;
-
     setNewActivity((prev) => ({
       ...prev,
       dateTime: new Date(
@@ -90,45 +128,72 @@ export const PatientProfileContent = ({ patientName, navigation }) => {
     }));
   };
 
-  const handleAddActivity = () => {
-    const newActivities = { ...activitiesGroupedByDate };
-    if (newActivities[newActivity.dateTime]) {
-      newActivities[newActivity.dateTime].push({
-        id:
-          Math.max(
-            ...Object.values(newActivities)
-              .flat()
-              .map((activity) => activity.id)
-          ) + 1,
+  const handleAddActivity = async () => {
+    try {
+      const dateTimestamp = Timestamp.fromDate(new Date(
+        newActivity.dateTime.getFullYear(),
+        newActivity.dateTime.getMonth(),
+        newActivity.dateTime.getDate()
+      ));
+
+      const activityData = {
         title: newActivity.title,
         time: newActivity.time,
-        image: newActivity.image
-      });
-    } else {
-      newActivities[newActivity.dateTime] = [
-        {
-          id:
-            Math.max(
-              ...Object.values(newActivities)
-                .flat()
-                .map((activity) => activity.id)
-            ) + 1,
-          title: newActivity.title,
-          time: newActivity.time,
-          image: newActivity.image
+        imageKey: newActivity.imageKey || 'defaultImg',
+        date: dateTimestamp
+      };
+
+      const docRef = await addDoc(
+        collection(db, 'users', patientId, 'activities'),
+        activityData
+      );
+
+      // Update local state optimistically
+      const dateKey = new Date(
+        newActivity.dateTime.getFullYear(),
+        newActivity.dateTime.getMonth(),
+        newActivity.dateTime.getDate()
+      ).toString();
+
+      const entry = {
+        id: docRef.id,
+        title: newActivity.title,
+        time: newActivity.time,
+        imageKey: activityData.imageKey,
+        image: resolveImage(activityData.imageKey)
+      };
+
+      setActivitiesGroupedByDate((prev) => {
+        const updated = { ...prev };
+        if (updated[dateKey]) {
+          updated[dateKey] = [...updated[dateKey], entry];
+        } else {
+          updated[dateKey] = [entry];
         }
-      ];
+        return updated;
+      });
+
+      setModalVisible(false);
+      setSelectedCategory(null);
+      setNewActivity({ dateTime: new Date(), title: '', time: '', imageKey: 'defaultImg', image: ACTIVITY_IMAGES.defaultImg });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to add activity. Please try again.');
     }
-    setActivitiesGroupedByDate(newActivities);
-    setModalVisible(false);
-    setSelectedCategory(null);
-    setNewActivity({ dateTime: new Date(), title: '', time: '', image: IMG.defaultImg });
   };
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category.label);
-    setNewActivity((prev) => ({ ...prev, image: category.image }));
+    setNewActivity((prev) => ({ ...prev, image: category.image, imageKey: category.imageKey }));
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Color.blue} />
+        <Text style={styles.loadingText}>Loading activities...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.contentWrapper}>
@@ -282,7 +347,8 @@ export const PatientProfileContent = ({ patientName, navigation }) => {
                         activityTitle: activity.title,
                         activityTime: activity.time,
                         activityImage: activity.image,
-                        patientName: patientName
+                        patientName: patientName,
+                        patientId: patientId
                       })
                     }>
                     {activity.image && (
@@ -312,7 +378,7 @@ export const PatientProfileContent = ({ patientName, navigation }) => {
 const PatientProfile = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { patientName } = route.params;
+  const { patientName, patientId } = route.params;
 
   return (
     <View style={styles.fullScreenContainer}>
@@ -322,11 +388,12 @@ const PatientProfile = () => {
         rightIconName={'person-circle-outline'}
       />
       <View style={styles.activityContainer}>
-        <PatientProfileContent patientName={patientName} navigation={navigation} />
+        <PatientProfileContent patientName={patientName} patientId={patientId} navigation={navigation} />
       </View>
       <NavBar
         navigation={navigation}
         patientName={patientName}
+        patientId={patientId}
         specialIcon="house"
       />
     </View>
@@ -341,6 +408,21 @@ const styles = StyleSheet.create({
 
   contentWrapper: {
     flex: 1
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    backgroundColor: Color.colorWhite
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    fontFamily: FontFamily.nunitoRegular,
+    color: Color.textGray
   },
 
   activityContainer: {

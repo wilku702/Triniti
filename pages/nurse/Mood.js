@@ -1,10 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Calendar } from 'react-native-calendars';
@@ -12,7 +14,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
 import { Color, FontFamily } from '../../GlobalStyles';
-import { MOOD_ENTRIES, DEFAULT_MOOD_ENTRIES } from '../../data/fakeData';
+import { db } from '../../Firebase';
+import { collection, getDocs, addDoc, query, orderBy } from 'firebase/firestore';
 
 const MOOD_OPTIONS = [
   { label: 'Great', icon: 'sentiment-very-satisfied', color: '#4CAF50' },
@@ -22,13 +25,32 @@ const MOOD_OPTIONS = [
   { label: 'Bad', icon: 'sentiment-very-dissatisfied', color: '#F44336' }
 ];
 
-export const MoodContent = ({ patientName }) => {
-  const [moodEntries, setMoodEntries] = useState(
-    MOOD_ENTRIES[patientName] || DEFAULT_MOOD_ENTRIES
-  );
-
+export const MoodContent = ({ patientName, patientId }) => {
+  const [moodEntries, setMoodEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedMood, setSelectedMood] = useState(null);
+
+  useEffect(() => {
+    const fetchMoodEntries = async () => {
+      try {
+        setLoading(true);
+        const moodRef = collection(db, 'users', patientId, 'moodEntries');
+        const q = query(moodRef, orderBy('date', 'desc'));
+        const snapshot = await getDocs(q);
+        const entries = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setMoodEntries(entries);
+      } catch (error) {
+        console.error('Error fetching mood entries:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (patientId) fetchMoodEntries();
+  }, [patientId]);
 
   const getMoodData = (moodLabel) => {
     return MOOD_OPTIONS.find((m) => m.label === moodLabel) || MOOD_OPTIONS[2];
@@ -98,16 +120,26 @@ export const MoodContent = ({ patientName }) => {
     );
   };
 
-  const handleLogMood = (mood) => {
+  const handleLogMood = async (mood) => {
     setSelectedMood(mood.label);
     const today = new Date().toISOString().split('T')[0];
-    const newEntry = {
-      id: moodEntries.length + 1,
+    const entryData = {
       date: today,
       mood: mood.label,
       notes: ''
     };
-    setMoodEntries((prev) => [newEntry, ...prev]);
+
+    try {
+      const docRef = await addDoc(
+        collection(db, 'users', patientId, 'moodEntries'),
+        entryData
+      );
+      const newEntry = { id: docRef.id, ...entryData };
+      setMoodEntries((prev) => [newEntry, ...prev]);
+    } catch (error) {
+      console.error('Error logging mood:', error);
+      Alert.alert('Error', 'Failed to log mood. Please try again.');
+    }
   };
 
   const handleDayPress = (day) => {
@@ -119,6 +151,15 @@ export const MoodContent = ({ patientName }) => {
   const displayedEntries = selectedDate
     ? moodEntries.filter((entry) => entry.date === selectedDate)
     : moodEntries;
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Color.blue} />
+        <Text style={styles.loadingText}>Loading mood entries...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -202,7 +243,7 @@ export const MoodContent = ({ patientName }) => {
 const Mood = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { patientName } = route.params;
+  const { patientName, patientId } = route.params;
 
   return (
     <View style={styles.container}>
@@ -212,11 +253,12 @@ const Mood = () => {
         rightIconName={'person-circle-outline'}
       />
       <View style={styles.contentShadow}>
-        <MoodContent patientName={patientName} />
+        <MoodContent patientName={patientName} patientId={patientId} />
       </View>
       <NavBar
         navigation={navigation}
         patientName={patientName}
+        patientId={patientId}
         specialIcon="chart-line"
       />
     </View>
@@ -246,6 +288,17 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingHorizontal: 20,
     paddingBottom: 120
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    fontFamily: FontFamily.nunitoRegular,
+    color: Color.textGray
   },
   sectionTitle: {
     fontSize: 22,

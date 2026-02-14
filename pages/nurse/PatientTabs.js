@@ -19,21 +19,21 @@ const TAB_TO_ICON = {
 const PatientTabs = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { patientName, initialTab } = route.params;
+  const { patientName, patientId, initialTab } = route.params;
   const [activeTab, setActiveTab] = useState(initialTab || 'PatientProfile');
 
   const renderContent = () => {
     switch (activeTab) {
       case 'PatientProfile':
-        return <PatientProfileContent patientName={patientName} navigation={navigation} />;
+        return <PatientProfileContent patientName={patientName} patientId={patientId} navigation={navigation} />;
       case 'Calls':
-        return <CallsContent patientName={patientName} />;
+        return <CallsContent patientName={patientName} patientId={patientId} />;
       case 'Mood':
-        return <MoodContent patientName={patientName} />;
+        return <MoodContent patientName={patientName} patientId={patientId} />;
       case 'EditInfo':
-        return <EditInfoContent patientName={patientName} />;
+        return <EditInfoContent patientName={patientName} patientId={patientId} />;
       default:
-        return <PatientProfileContent patientName={patientName} navigation={navigation} />;
+        return <PatientProfileContent patientName={patientName} patientId={patientId} navigation={navigation} />;
     }
   };
 

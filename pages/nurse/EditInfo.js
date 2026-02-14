@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,19 +10,41 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../Firebase';
 import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
 import { Color, FontFamily } from '../../GlobalStyles';
 
-export const EditInfoContent = ({ patientName }) => {
+export const EditInfoContent = ({ patientName, patientId }) => {
   const [name, setName] = useState(patientName);
   const [age, setAge] = useState('');
   const [room, setRoom] = useState('');
   const [notes, setNotes] = useState('');
   const [emergencyContact, setEmergencyContact] = useState('');
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const docSnap = await getDoc(doc(db, 'users', patientId));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setName(data.name || patientName);
+          setAge(data.age || '');
+          setRoom(data.room || '');
+          setNotes(data.notes || '');
+          setEmergencyContact(data.emergencyContact || '');
+        }
+      } catch (error) {
+        console.error('Error fetching patient data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (patientId) fetchPatientData();
+  }, [patientId]);
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -32,29 +54,29 @@ export const EditInfoContent = ({ patientName }) => {
 
     setSaving(true);
     try {
-      const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('name', '==', patientName));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const userDoc = querySnapshot.docs[0];
-        await updateDoc(doc(db, 'users', userDoc.id), {
-          name: name.trim(),
-          age: age.trim(),
-          room: room.trim(),
-          notes: notes.trim(),
-          emergencyContact: emergencyContact.trim()
-        });
-        Alert.alert('Saved', 'Patient information updated successfully.');
-      } else {
-        Alert.alert('Error', 'Patient not found in database.');
-      }
+      await updateDoc(doc(db, 'users', patientId), {
+        name: name.trim(),
+        age: age.trim(),
+        room: room.trim(),
+        notes: notes.trim(),
+        emergencyContact: emergencyContact.trim()
+      });
+      Alert.alert('Saved', 'Patient information updated successfully.');
     } catch (error) {
       Alert.alert('Error', 'Failed to save changes. Please try again.');
     } finally {
       setSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Color.blue} />
+        <Text style={styles.loadingText}>Loading patient info...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -123,7 +145,7 @@ export const EditInfoContent = ({ patientName }) => {
 const EditInfo = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { patientName } = route.params;
+  const { patientName, patientId } = route.params;
 
   return (
     <View style={styles.container}>
@@ -133,11 +155,12 @@ const EditInfo = () => {
         rightIconName={'person-circle-outline'}
       />
       <View style={styles.contentShadow}>
-        <EditInfoContent patientName={patientName} />
+        <EditInfoContent patientName={patientName} patientId={patientId} />
       </View>
       <NavBar
         navigation={navigation}
         patientName={patientName}
+        patientId={patientId}
         specialIcon="person-sharp"
       />
     </View>
@@ -162,6 +185,17 @@ const styles = StyleSheet.create({
   contentArea: {
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    fontFamily: FontFamily.nunitoRegular,
+    color: Color.textGray
   },
   scrollContent: {
     paddingTop: 30,

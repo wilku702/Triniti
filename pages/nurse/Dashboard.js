@@ -13,7 +13,6 @@ import { useNavigation } from '@react-navigation/native';
 import { db } from '../../Firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { Color, FontFamily } from '../../GlobalStyles';
-import { PATIENTS as FAKE_PATIENTS } from '../../data/fakeData';
 
 const Dashboard = () => {
   const navigation = useNavigation();
@@ -29,14 +28,13 @@ const Dashboard = () => {
         setError(null);
         const querySnapshot = await getDocs(collection(db, 'users'));
         const patientList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
           name: doc.data().name || 'Unknown',
           image: doc.data().image
         }));
-        const firebaseNames = new Set(patientList.map((p) => p.name));
-        const uniqueFake = FAKE_PATIENTS.filter((p) => !firebaseNames.has(p.name));
-        setPatients([...patientList, ...uniqueFake]);
+        setPatients(patientList);
       } catch (err) {
-        setPatients(FAKE_PATIENTS);
+        setError('Failed to load patients. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -49,8 +47,11 @@ const Dashboard = () => {
     (patient.name || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const onPatientPress = (patientName) => {
-    navigation.navigate('PatientTabs', { patientName });
+  const onPatientPress = (patient) => {
+    navigation.navigate('PatientTabs', {
+      patientName: patient.name,
+      patientId: patient.id
+    });
   };
 
   const handleSearch = (query) => {
@@ -99,12 +100,12 @@ const Dashboard = () => {
 
             {!loading && !error && filteredPatients.length > 0 && (
               <View style={styles.patientButtonContainer}>
-                {filteredPatients.map((patient, index) => (
+                {filteredPatients.map((patient) => (
                   <PatientButton
-                    key={index}
+                    key={patient.id}
                     patientName={patient.name}
                     image={patient.image}
-                    onPress={() => onPatientPress(patient.name)}
+                    onPress={() => onPatientPress(patient)}
                   />
                 ))}
               </View>
