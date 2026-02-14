@@ -37,3 +37,7 @@ yarn-error.*
 
 # Firebase
 Firebase.js
+
+CLAUDE.md
+.claude/
+PROJECT_CONTEXT.md

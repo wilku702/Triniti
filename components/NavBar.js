@@ -3,23 +3,31 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
 import { Color } from '../GlobalStyles';
 
-const NavBar = ({ navigation, patientName, specialIcon }) => {
+const NavBar = ({ navigation, patientName, specialIcon, onTabChange }) => {
   const getIconColor = (iconName) => {
     return iconName === specialIcon ? Color.navActive : Color.navDefault;
+  };
+
+  const handlePress = (tabName, routeName) => {
+    if (onTabChange) {
+      onTabChange(tabName);
+    } else {
+      navigation.navigate(routeName, { patientName });
+    }
   };
 
   return (
     <View style={styles.navbarContainer}>
       <TouchableOpacity
-        onPress={() => navigation.navigate('PatientProfile', { patientName })}>
+        onPress={() => handlePress('PatientProfile', 'PatientProfile')}>
         <FontAwesome6 name="house" size={40} color={getIconColor('house')} />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate('Calls', { patientName })}>
+        onPress={() => handlePress('Calls', 'Calls')}>
         <Ionicons name="calendar" size={40} color={getIconColor('calendar')} />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate('Mood', { patientName })}>
+        onPress={() => handlePress('Mood', 'Mood')}>
         <FontAwesome6
           name="chart-line"
           size={40}
@@ -27,7 +35,7 @@ const NavBar = ({ navigation, patientName, specialIcon }) => {
         />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate('EditInfo', { patientName })}>
+        onPress={() => handlePress('EditInfo', 'EditInfo')}>
         <Ionicons
           name="person-sharp"
           size={40}

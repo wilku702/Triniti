@@ -16,60 +16,17 @@ import NavBar from '../../components/NavBar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Color, FontFamily } from '../../GlobalStyles';
+import { ACTIVITIES, DEFAULT_ACTIVITIES } from '../../data/fakeData';
 
-const PatientProfile = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { patientName } = route.params;
+export const PatientProfileContent = ({ patientName, navigation }) => {
 
   const handleCancelAddActivity = () => {
     setModalVisible(false);
   };
 
-  const [activitiesGroupedByDate, setActivitiesGroupedByDate] = useState({
-    'Wed Apr 17 2024 18:00:00 GMT-0500': [
-      {
-        id: 1,
-        title: 'Reading Books',
-        time: '9:30 AM - 10:00 AM',
-        image: {
-          uri: 'https://neighborsdc.org/wp-content/uploads/2019/04/the-neighbors-of-dunn-county-senior-reading-1024x585.png'
-        }
-      },
-      {
-        id: 2,
-        title: "Martha's Birthday Party",
-        time: '1:00 PM - 3:00 PM',
-        image: {
-          uri: 'https://images.pexels.com/photos/18459203/pexels-photo-18459203/free-photo-of-caregiver-serving-food-for-elderly-people-in-retirement-house.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-        }
-      },
-      {
-        id: 3,
-        title: 'Karaoke Night',
-        time: '8:00 PM - 10:00 PM',
-        image: require('../../assets/activity/karaoke.png')
-      }
-    ],
-    'Tue Apr 16 2024 18:00:00 GMT-0500': [
-      {
-        id: 4,
-        title: 'Eating Breakfast',
-        time: '0:00 PM - 0:00 PM',
-        image: {
-          uri: 'https://images.pexels.com/photos/18429461/pexels-photo-18429461.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-        }
-      },
-      {
-        id: 5,
-        title: "An's Birthday Party",
-        time: '0:00 PM - 0:00 PM',
-        image: {
-          uri: 'https://images.pexels.com/photos/18459203/pexels-photo-18459203/free-photo-of-caregiver-serving-food-for-elderly-people-in-retirement-house.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-        }
-      }
-    ]
-  });
+  const [activitiesGroupedByDate, setActivitiesGroupedByDate] = useState(
+    ACTIVITIES[patientName] || DEFAULT_ACTIVITIES
+  );
   const [modalVisible, setModalVisible] = useState(false);
   const [newActivity, setNewActivity] = useState({
     dateTime: new Date(),
@@ -152,6 +109,110 @@ const PatientProfile = () => {
   };
 
   return (
+    <View style={styles.contentWrapper}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(!modalVisible)}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.prompt}>Activity Title</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) =>
+                setNewActivity((prev) => ({ ...prev, title: text }))
+              }
+              placeholder="Activity title"
+              value={newActivity.title}
+            />
+            <Text style={styles.prompt}>Time</Text>
+            {timePickerVisible && (
+              <DateTimePicker
+                value={newActivity.dateTime}
+                mode="time"
+                display="default"
+                onChange={handleDateChange}
+              />
+            )}
+            <Text style={styles.prompt}>Date</Text>
+            {datePickerVisible && (
+              <DateTimePicker
+                value={newActivity.dateTime}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+              />
+            )}
+            <Button title="Add Activity" onPress={handleAddActivity} />
+            <Button
+              title="Cancel"
+              color="red"
+              onPress={handleCancelAddActivity}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => setModalVisible(true)}>
+        <MaterialIcons name="add" size={40} color="white" />
+      </TouchableOpacity>
+
+      <ScrollView style={styles.scrollBody}>
+        <Text style={styles.scheduleTitle}>
+          {' '}
+          {getFirstName(patientName)}'s Schedule
+        </Text>
+        <View style={styles.activityContainerPosts}>
+          {Object.entries(activitiesGroupedByDate).map(
+            ([date, activities], index) => (
+              <View key={date}>
+                {index !== 0 && <View style={styles.divider} />}
+                <Text style={styles.dateHeader}>{formatDate(date)}</Text>
+                {activities.map((activity) => (
+                  <TouchableOpacity
+                    key={activity.id}
+                    style={styles.activityItem}
+                    onPress={() =>
+                      navigation.navigate('Activity', {
+                        activityDocumentId: activity.id,
+                        activityTitle: activity.title,
+                        activityTime: activity.time,
+                        activityImage: activity.image,
+                        patientName: patientName
+                      })
+                    }>
+                    {activity.image && (
+                      <Image
+                        source={activity.image}
+                        style={styles.activityImage}
+                      />
+                    )}
+                    <View style={styles.activityContent}>
+                      <Text style={styles.activityTitle}>
+                        {activity.title}
+                      </Text>
+                      <Text style={styles.activityTime}>{activity.time}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )
+          )}
+        </View>
+      </ScrollView>
+    </View>
+  );
+};
+
+const PatientProfile = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { patientName } = route.params;
+
+  return (
     <View style={styles.fullScreenContainer}>
       <Header
         headerName={patientName}
@@ -159,101 +220,8 @@ const PatientProfile = () => {
         rightIconName={'person-circle-outline'}
       />
       <View style={styles.activityContainer}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(!modalVisible)}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.prompt}>Activity Title</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={(text) =>
-                  setNewActivity((prev) => ({ ...prev, title: text }))
-                }
-                placeholder="Activity title"
-                value={newActivity.title}
-              />
-              <Text style={styles.prompt}>Time</Text>
-              {timePickerVisible && (
-                <DateTimePicker
-                  value={newActivity.dateTime}
-                  mode="time"
-                  display="default"
-                  onChange={handleDateChange}
-                />
-              )}
-              <Text style={styles.prompt}>Date</Text>
-              {datePickerVisible && (
-                <DateTimePicker
-                  value={newActivity.dateTime}
-                  mode="date"
-                  display="default"
-                  onChange={handleDateChange}
-                />
-              )}
-              <Button title="Add Activity" onPress={handleAddActivity} />
-              <Button
-                title="Cancel"
-                color="red"
-                onPress={handleCancelAddActivity}
-              />
-            </View>
-          </View>
-        </Modal>
-
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setModalVisible(true)}>
-          <MaterialIcons name="add" size={40} color="white" />
-        </TouchableOpacity>
-
-        <ScrollView style={styles.scrollBody}>
-          <Text style={styles.scheduleTitle}>
-            {' '}
-            {getFirstName(patientName)}'s Schedule
-          </Text>
-          <View style={styles.activityContainerPosts}>
-            {Object.entries(activitiesGroupedByDate).map(
-              ([date, activities], index) => (
-                <View key={date}>
-                  {index !== 0 && <View style={styles.divider} />}
-                  <Text style={styles.dateHeader}>{formatDate(date)}</Text>
-                  {activities.map((activity) => (
-                    <TouchableOpacity
-                      key={activity.id}
-                      style={styles.activityItem}
-                      onPress={() =>
-                        navigation.navigate('Activity', {
-                          activityDocumentId: activity.id,
-                          activityTitle: activity.title,
-                          activityTime: activity.time,
-                          activityImage: activity.image,
-                          patientName: patientName
-                        })
-                      }>
-                      {activity.image && (
-                        <Image
-                          source={activity.image}
-                          style={styles.activityImage}
-                        />
-                      )}
-                      <View style={styles.activityContent}>
-                        <Text style={styles.activityTitle}>
-                          {activity.title}
-                        </Text>
-                        <Text style={styles.activityTime}>{activity.time}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )
-            )}
-          </View>
-        </ScrollView>
+        <PatientProfileContent patientName={patientName} navigation={navigation} />
       </View>
-
       <NavBar
         navigation={navigation}
         patientName={patientName}
@@ -267,6 +235,10 @@ const styles = StyleSheet.create({
   fullScreenContainer: {
     flex: 1,
     backgroundColor: Color.blue
+  },
+
+  contentWrapper: {
+    flex: 1
   },
 
   activityContainer: {

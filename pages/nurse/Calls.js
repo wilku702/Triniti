@@ -11,35 +11,12 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
 import { Color, FontFamily } from '../../GlobalStyles';
+import { APPOINTMENTS, DEFAULT_APPOINTMENTS } from '../../data/fakeData';
 
-const Calls = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { patientName } = route.params;
-
-  const [appointments] = useState([
-    {
-      id: 1,
-      title: 'Family Video Call',
-      date: 'Monday, April 22',
-      time: '2:00 PM - 2:30 PM',
-      type: 'video'
-    },
-    {
-      id: 2,
-      title: 'Doctor Check-up',
-      date: 'Wednesday, April 24',
-      time: '10:00 AM - 10:45 AM',
-      type: 'in-person'
-    },
-    {
-      id: 3,
-      title: 'Physical Therapy',
-      date: 'Friday, April 26',
-      time: '3:00 PM - 4:00 PM',
-      type: 'in-person'
-    }
-  ]);
+export const CallsContent = ({ patientName }) => {
+  const [appointments] = useState(
+    APPOINTMENTS[patientName] || DEFAULT_APPOINTMENTS
+  );
 
   const getIconForType = (type) => {
     switch (type) {
@@ -53,6 +30,39 @@ const Calls = () => {
   };
 
   return (
+    <ScrollView
+      style={styles.contentArea}
+      contentContainerStyle={styles.scrollContent}>
+      <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
+      {appointments.map((appointment) => (
+        <View key={appointment.id} style={styles.appointmentCard}>
+          <View style={styles.iconContainer}>
+            <Ionicons
+              name={getIconForType(appointment.type)}
+              size={28}
+              color={Color.blue}
+            />
+          </View>
+          <View style={styles.appointmentDetails}>
+            <Text style={styles.appointmentTitle}>{appointment.title}</Text>
+            <Text style={styles.appointmentDate}>{appointment.date}</Text>
+            <Text style={styles.appointmentTime}>{appointment.time}</Text>
+          </View>
+        </View>
+      ))}
+      {appointments.length === 0 && (
+        <Text style={styles.emptyText}>No upcoming appointments</Text>
+      )}
+    </ScrollView>
+  );
+};
+
+const Calls = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { patientName } = route.params;
+
+  return (
     <View style={styles.container}>
       <Header
         headerName={patientName}
@@ -60,28 +70,7 @@ const Calls = () => {
         rightIconName={'person-circle-outline'}
       />
       <View style={styles.contentShadow}>
-        <ScrollView style={styles.contentArea}>
-          <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
-          {appointments.map((appointment) => (
-            <View key={appointment.id} style={styles.appointmentCard}>
-              <View style={styles.iconContainer}>
-                <Ionicons
-                  name={getIconForType(appointment.type)}
-                  size={28}
-                  color={Color.blue}
-                />
-              </View>
-              <View style={styles.appointmentDetails}>
-                <Text style={styles.appointmentTitle}>{appointment.title}</Text>
-                <Text style={styles.appointmentDate}>{appointment.date}</Text>
-                <Text style={styles.appointmentTime}>{appointment.time}</Text>
-              </View>
-            </View>
-          ))}
-          {appointments.length === 0 && (
-            <Text style={styles.emptyText}>No upcoming appointments</Text>
-          )}
-        </ScrollView>
+        <CallsContent patientName={patientName} />
       </View>
       <NavBar
         navigation={navigation}
@@ -109,7 +98,9 @@ const styles = StyleSheet.create({
   },
   contentArea: {
     borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopRightRadius: 40
+  },
+  scrollContent: {
     paddingTop: 30,
     paddingHorizontal: 20,
     paddingBottom: 120

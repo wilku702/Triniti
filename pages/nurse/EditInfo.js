@@ -16,11 +16,7 @@ import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
 import { Color, FontFamily } from '../../GlobalStyles';
 
-const EditInfo = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { patientName } = route.params;
-
+export const EditInfoContent = ({ patientName }) => {
   const [name, setName] = useState(patientName);
   const [age, setAge] = useState('');
   const [room, setRoom] = useState('');
@@ -61,6 +57,75 @@ const EditInfo = () => {
   };
 
   return (
+    <ScrollView
+      style={styles.contentArea}
+      contentContainerStyle={styles.scrollContent}>
+      <Text style={styles.sectionTitle}>Edit Patient Info</Text>
+
+      <Text style={styles.label}>Full Name</Text>
+      <TextInput
+        style={styles.input}
+        value={name}
+        onChangeText={setName}
+        placeholder="Patient name"
+      />
+
+      <Text style={styles.label}>Age</Text>
+      <TextInput
+        style={styles.input}
+        value={age}
+        onChangeText={setAge}
+        placeholder="Age"
+        keyboardType="number-pad"
+      />
+
+      <Text style={styles.label}>Room Number</Text>
+      <TextInput
+        style={styles.input}
+        value={room}
+        onChangeText={setRoom}
+        placeholder="Room number"
+      />
+
+      <Text style={styles.label}>Emergency Contact</Text>
+      <TextInput
+        style={styles.input}
+        value={emergencyContact}
+        onChangeText={setEmergencyContact}
+        placeholder="Phone number"
+        keyboardType="phone-pad"
+      />
+
+      <Text style={styles.label}>Notes</Text>
+      <TextInput
+        style={[styles.input, styles.notesInput]}
+        value={notes}
+        onChangeText={setNotes}
+        placeholder="Additional notes..."
+        multiline
+        textAlignVertical="top"
+      />
+
+      <TouchableOpacity
+        style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+        onPress={handleSave}
+        disabled={saving}>
+        {saving ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={styles.saveButtonText}>Save Changes</Text>
+        )}
+      </TouchableOpacity>
+    </ScrollView>
+  );
+};
+
+const EditInfo = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { patientName } = route.params;
+
+  return (
     <View style={styles.container}>
       <Header
         headerName={patientName}
@@ -68,66 +133,7 @@ const EditInfo = () => {
         rightIconName={'person-circle-outline'}
       />
       <View style={styles.contentShadow}>
-        <ScrollView
-          style={styles.contentArea}
-          contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.sectionTitle}>Edit Patient Info</Text>
-
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Patient name"
-          />
-
-          <Text style={styles.label}>Age</Text>
-          <TextInput
-            style={styles.input}
-            value={age}
-            onChangeText={setAge}
-            placeholder="Age"
-            keyboardType="number-pad"
-          />
-
-          <Text style={styles.label}>Room Number</Text>
-          <TextInput
-            style={styles.input}
-            value={room}
-            onChangeText={setRoom}
-            placeholder="Room number"
-          />
-
-          <Text style={styles.label}>Emergency Contact</Text>
-          <TextInput
-            style={styles.input}
-            value={emergencyContact}
-            onChangeText={setEmergencyContact}
-            placeholder="Phone number"
-            keyboardType="phone-pad"
-          />
-
-          <Text style={styles.label}>Notes</Text>
-          <TextInput
-            style={[styles.input, styles.notesInput]}
-            value={notes}
-            onChangeText={setNotes}
-            placeholder="Additional notes..."
-            multiline
-            textAlignVertical="top"
-          />
-
-          <TouchableOpacity
-            style={[styles.saveButton, saving && styles.saveButtonDisabled]}
-            onPress={handleSave}
-            disabled={saving}>
-            {saving ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text style={styles.saveButtonText}>Save Changes</Text>
-            )}
-          </TouchableOpacity>
-        </ScrollView>
+        <EditInfoContent patientName={patientName} />
       </View>
       <NavBar
         navigation={navigation}

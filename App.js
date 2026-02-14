@@ -7,11 +7,8 @@ import Start from './pages/authorization/Start';
 import StaffLogin from './pages/authorization/StaffLogin';
 import FamilyLogin from './pages/authorization/FamilyLogin';
 import Dashboard from './pages/nurse/Dashboard';
-import PatientProfile from './pages/nurse/PatientProfile';
+import PatientTabs from './pages/nurse/PatientTabs';
 import Activity from './pages/nurse/Activity';
-import Calls from './pages/nurse/Calls';
-import Mood from './pages/nurse/Mood';
-import EditInfo from './pages/nurse/EditInfo';
 import AccountSettings from './pages/AccountSettings';
 import FamPatientProfile from './pages/family/FamPatientProfile';
 
@@ -37,11 +34,8 @@ const App = () => {
         <Stack.Screen name="StaffLogin" component={StaffLogin} />
         <Stack.Screen name="FamilyLogin" component={FamilyLogin} />
         <Stack.Screen name="Dashboard" component={Dashboard} />
-        <Stack.Screen name="PatientProfile" component={PatientProfile} />
+        <Stack.Screen name="PatientTabs" component={PatientTabs} />
         <Stack.Screen name="Activity" component={Activity} />
-        <Stack.Screen name="Calls" component={Calls} />
-        <Stack.Screen name="Mood" component={Mood} />
-        <Stack.Screen name="EditInfo" component={EditInfo} />
         <Stack.Screen name="AccountSettings" component={AccountSettings} />
         <Stack.Screen name="FamPatientProfile" component={FamPatientProfile} />
       </Stack.Navigator>

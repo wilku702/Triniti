@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { db } from '../../Firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { Color, FontFamily } from '../../GlobalStyles';
+import { PATIENTS as FAKE_PATIENTS } from '../../data/fakeData';
 
 const Dashboard = () => {
   const navigation = useNavigation();
@@ -31,9 +32,11 @@ const Dashboard = () => {
           name: doc.data().name || 'Unknown',
           image: doc.data().image
         }));
-        setPatients(patientList);
+        const firebaseNames = new Set(patientList.map((p) => p.name));
+        const uniqueFake = FAKE_PATIENTS.filter((p) => !firebaseNames.has(p.name));
+        setPatients([...patientList, ...uniqueFake]);
       } catch (err) {
-        setError('Failed to load patients. Please try again.');
+        setPatients(FAKE_PATIENTS);
       } finally {
         setLoading(false);
       }
@@ -47,7 +50,7 @@ const Dashboard = () => {
   );
 
   const onPatientPress = (patientName) => {
-    navigation.navigate('PatientProfile', { patientName });
+    navigation.navigate('PatientTabs', { patientName });
   };
 
   const handleSearch = (query) => {

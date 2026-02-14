@@ -9,54 +9,14 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Color, FontFamily } from '../../GlobalStyles';
+import { ACTIVITIES, DEFAULT_ACTIVITIES } from '../../data/fakeData';
 
 const FamPatientProfile = () => {
   const navigation = useNavigation();
 
-  const [activitiesGroupedByDate] = useState({
-    'Wed Apr 17 2024 18:00:00 GMT-0500': [
-      {
-        id: 1,
-        title: 'Reading Books',
-        time: '9:30 AM - 10:00 AM',
-        image: {
-          uri: 'https://neighborsdc.org/wp-content/uploads/2019/04/the-neighbors-of-dunn-county-senior-reading-1024x585.png'
-        }
-      },
-      {
-        id: 2,
-        title: "Martha's Birthday Party",
-        time: '1:00 PM - 3:00 PM',
-        image: {
-          uri: 'https://images.pexels.com/photos/18459203/pexels-photo-18459203/free-photo-of-caregiver-serving-food-for-elderly-people-in-retirement-house.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-        }
-      },
-      {
-        id: 3,
-        title: 'Karaoke Night',
-        time: '8:00 PM - 10:00 PM',
-        image: require('../../assets/activity/karaoke.png')
-      }
-    ],
-    'Tue Apr 16 2024 18:00:00 GMT-0500': [
-      {
-        id: 4,
-        title: 'Eating Breakfast',
-        time: '8:00 AM - 9:00 AM',
-        image: {
-          uri: 'https://images.pexels.com/photos/18429461/pexels-photo-18429461.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-        }
-      },
-      {
-        id: 5,
-        title: "An's Birthday Party",
-        time: '2:00 PM - 4:00 PM',
-        image: {
-          uri: 'https://images.pexels.com/photos/18459203/pexels-photo-18459203/free-photo-of-caregiver-serving-food-for-elderly-people-in-retirement-house.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-        }
-      }
-    ]
-  });
+  const [activitiesGroupedByDate] = useState(
+    ACTIVITIES['Margaret Thompson'] || DEFAULT_ACTIVITIES
+  );
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
