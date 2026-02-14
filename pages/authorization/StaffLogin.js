@@ -5,51 +5,18 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   Alert
 } from 'react-native';
-import { useAuth } from '../../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 import { Color, FontFamily } from '../../GlobalStyles';
 
 const StaffLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const navigation = useNavigation();
 
-  const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Missing Fields', 'Please enter both email and password.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await login(email.trim(), password);
-    } catch (error) {
-      let message = 'An unexpected error occurred. Please try again.';
-      switch (error.code) {
-        case 'auth/invalid-email':
-          message = 'Please enter a valid email address.';
-          break;
-        case 'auth/user-not-found':
-          message = 'No account found with this email.';
-          break;
-        case 'auth/wrong-password':
-        case 'auth/invalid-credential':
-          message = 'Incorrect password. Please try again.';
-          break;
-        case 'auth/too-many-requests':
-          message = 'Too many failed attempts. Please try again later.';
-          break;
-        case 'auth/network-request-failed':
-          message = 'Network error. Please check your connection.';
-          break;
-      }
-      Alert.alert('Login Failed', message);
-    } finally {
-      setLoading(false);
-    }
+  const handleLogin = () => {
+    navigation.navigate('Dashboard');
   };
 
   const handleForgotPassword = () => {
@@ -70,7 +37,6 @@ const StaffLogin = () => {
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
-        editable={!loading}
       />
       <TextInput
         style={styles.input}
@@ -78,17 +44,11 @@ const StaffLogin = () => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        editable={!loading}
       />
       <TouchableOpacity
-        style={[styles.loginButton, loading && styles.loginButtonDisabled]}
-        onPress={handleLogin}
-        disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={styles.loginButtonText}>Login</Text>
-        )}
+        style={styles.loginButton}
+        onPress={handleLogin}>
+        <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleForgotPassword}>
@@ -133,9 +93,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginBottom: 20
-  },
-  loginButtonDisabled: {
-    opacity: 0.7
   },
   loginButtonText: {
     color: Color.colorWhite,

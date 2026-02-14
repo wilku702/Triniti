@@ -30,7 +30,8 @@ export const Color = {
   navDefault: '#88b3ee',
   navActive: '#056EEC',
   textDark: '#333',
-  textGray: '#666'
+  textGray: '#666',
+  errorRed: '#E53935'
 };
 /* border radiuses */
 export const Border = {

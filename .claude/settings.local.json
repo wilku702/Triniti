@@ -3,7 +3,7 @@
     "allow": [
       "Bash(npx expo start:*)",
       "Bash(npx expo install:*)",
-      "Bash",
+      "Bash(*)",
       "Bash(xcrun simctl boot:*)",
       "Bash(xcrun simctl openurl:*)",
       "Bash(xcrun simctl io:*)",
@@ -12,7 +12,18 @@
       "Bash(open:*)",
       "Bash(EXPO_DEVICE_ID=2DC5E5DE-7E2F-42D4-82AB-4A41A345A966 npx expo start:*)",
       "Bash(grep:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(lsof:*)",
+      "mcp__chrome-devtools__list_pages",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__emulate",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__click",
+      "mcp__chrome-devtools__fill_form",
+      "mcp__chrome-devtools__list_console_messages",
+      "mcp__chrome-devtools__evaluate_script",
+      "mcp__chrome-devtools__handle_dialog"
     ]
   }
 }

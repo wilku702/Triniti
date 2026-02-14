@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  Image,
-  ActivityIndicator
+  Image
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../../context/AuthContext';
 import { Color, FontFamily } from '../../GlobalStyles';
 
 const FamPatientProfile = () => {
   const navigation = useNavigation();
-  const { user, logout } = useAuth();
 
   const [activitiesGroupedByDate] = useState({
     'Wed Apr 17 2024 18:00:00 GMT-0500': [
@@ -81,10 +78,11 @@ const FamPatientProfile = () => {
           name="log-out-outline"
           size={28}
           color={Color.colorWhite}
-          onPress={async () => {
-            try {
-              await logout();
-            } catch (e) {}
+          onPress={() => {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Start' }]
+            });
           }}
         />
       </View>

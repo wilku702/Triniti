@@ -8,12 +8,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../context/AuthContext';
 import { Color, FontFamily } from '../GlobalStyles';
 
 const AccountSettings = () => {
   const navigation = useNavigation();
-  const { user, logout } = useAuth();
 
   const handleLogout = () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -21,12 +19,11 @@ const AccountSettings = () => {
       {
         text: 'Log Out',
         style: 'destructive',
-        onPress: async () => {
-          try {
-            await logout();
-          } catch (error) {
-            Alert.alert('Error', 'Failed to log out. Please try again.');
-          }
+        onPress: () => {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Start' }]
+          });
         }
       }
     ]);
@@ -47,7 +44,7 @@ const AccountSettings = () => {
           <View style={styles.avatarContainer}>
             <Ionicons name="person-circle" size={80} color={Color.blue} />
           </View>
-          <Text style={styles.emailText}>{user?.email || 'No email'}</Text>
+          <Text style={styles.emailText}>Staff Member</Text>
         </View>
 
         <View style={styles.menuSection}>
@@ -77,7 +74,7 @@ const AccountSettings = () => {
         </View>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Ionicons name="log-out-outline" size={24} color="#E53935" />
+          <Ionicons name="log-out-outline" size={24} color={Color.errorRed} />
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
       </View>
@@ -149,13 +146,13 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E53935'
+    borderColor: Color.errorRed
   },
   logoutText: {
     fontSize: 16,
     fontFamily: FontFamily.nunitoBold,
     fontWeight: '600',
-    color: '#E53935',
+    color: Color.errorRed,
     marginLeft: 8
   }
 });

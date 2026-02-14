@@ -15,6 +15,7 @@ import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { Color, FontFamily } from '../../GlobalStyles';
 
 const PatientProfile = () => {
   const navigation = useNavigation();
@@ -273,6 +274,7 @@ const styles = StyleSheet.create({
     borderRadius: 40,
 
     shadowColor: Color.colorBlack,
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 6
   },
@@ -293,13 +295,13 @@ const styles = StyleSheet.create({
 
   activityItem: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Color.colorWhite,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'flex-start',
     marginTop: 10,
     marginBottom: 5,
-    shadowColor: '#000',
+    shadowColor: Color.colorBlack,
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
@@ -311,7 +313,7 @@ const styles = StyleSheet.create({
     height: 70,
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
-    backgroundColor: '#000'
+    backgroundColor: Color.colorBlack
   },
   activityContent: {
     flex: 1,
@@ -346,7 +348,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 6,
-    shadowColor: '#000',
+    shadowColor: Color.colorBlack,
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
@@ -372,11 +374,11 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: Color.colorWhite,
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: Color.colorBlack,
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5

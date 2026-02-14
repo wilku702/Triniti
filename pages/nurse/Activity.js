@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -23,8 +23,6 @@ const Activity = () => {
     activityImage,
     patientName
   } = route.params;
-
-  const [isEditing, setIsEditing] = useState(false);
 
   const handleDelete = () => {
     Alert.alert(
@@ -163,7 +161,7 @@ const styles = StyleSheet.create({
   deleteButton: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#E53935',
+    backgroundColor: Color.errorRed,
     padding: 14,
     borderRadius: 12,
     alignItems: 'center',
