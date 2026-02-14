@@ -30,9 +30,9 @@ const FamilyLogin = () => {
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
 
-      // After auth succeeds, look up Margaret Thompson's patient record
+      // After auth succeeds, look up Betty Johnson's patient record
       const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('name', '==', 'Margaret Thompson'));
+      const q = query(usersRef, where('name', '==', 'Betty Johnson'));
       const snapshot = await getDocs(q);
 
       if (!snapshot.empty) {

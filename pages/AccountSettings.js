@@ -33,12 +33,18 @@ const AccountSettings = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={28} color={Color.colorWhite} />
+          <Ionicons
+            style={styles.leftIcon}
+            name="arrow-back"
+            size={32}
+            color={Color.colorWhite}
+          />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Account Settings</Text>
-        <View style={{ width: 28 }} />
+        <View style={{ width: 40 }} />
       </View>
 
+      <View style={styles.contentShadow}>
       <View style={styles.contentArea}>
         <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
@@ -78,6 +84,7 @@ const AccountSettings = () => {
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
       </View>
+      </View>
     </View>
   );
 };
@@ -89,24 +96,37 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: Color.blue,
-    height: '16%',
+    height: '18%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: '8%'
+    paddingHorizontal: 10
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 34,
     fontFamily: FontFamily.nunitoBold,
     fontWeight: 'bold',
-    color: Color.colorWhite
+    color: Color.colorWhite,
+    top: '7%'
+  },
+  leftIcon: {
+    left: '60%',
+    top: '18%'
+  },
+  contentShadow: {
+    flex: 1,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    backgroundColor: Color.colorWhite,
+    shadowColor: Color.colorBlack,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6
   },
   contentArea: {
     flex: 1,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    backgroundColor: Color.colorWhite,
     paddingTop: 30,
     paddingHorizontal: 24
   },
