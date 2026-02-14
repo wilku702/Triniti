@@ -1,5 +1,13 @@
 # Triniti — Project Context
 
+Staff Login:
+- Email: staff@triniti.com
+- Password: Test1234!
+
+Family Login:
+- Email: family@triniti.com
+- Password: Test1234!
+
 ## 1. Project Overview
 
 Triniti is a **React Native / Expo** mobile application designed for **nursing home management**. It provides two user-facing portals:

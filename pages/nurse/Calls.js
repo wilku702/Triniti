@@ -29,6 +29,8 @@ export const CallsContent = ({ patientName, patientId }) => {
           id: doc.id,
           ...doc.data()
         }));
+        const parseDate = (str) => new Date(str.replace(/^\w+, /, ''));
+        list.sort((a, b) => parseDate(a.date) - parseDate(b.date));
         setAppointments(list);
       } catch (error) {
         console.error('Error fetching appointments:', error);

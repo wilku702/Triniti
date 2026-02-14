@@ -22,6 +22,12 @@ const PatientTabs = () => {
   const { patientName, patientId, initialTab } = route.params;
   const [activeTab, setActiveTab] = useState(initialTab || 'PatientProfile');
 
+  const formatShortName = (fullName) => {
+    const parts = fullName.split(' ');
+    if (parts.length < 2) return fullName;
+    return `${parts[0]} ${parts[parts.length - 1][0]}.`;
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'PatientProfile':
@@ -40,7 +46,7 @@ const PatientTabs = () => {
   return (
     <View style={styles.container}>
       <Header
-        headerName={patientName}
+        headerName={formatShortName(patientName)}
         leftIconName={'grid'}
         rightIconName={'person-circle-outline'}
       />

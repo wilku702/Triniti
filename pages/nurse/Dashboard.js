@@ -32,6 +32,7 @@ const Dashboard = () => {
           name: doc.data().name || 'Unknown',
           image: doc.data().image
         }));
+        patientList.sort((a, b) => a.name.localeCompare(b.name));
         setPatients(patientList);
       } catch (err) {
         setError('Failed to load patients. Please try again.');
