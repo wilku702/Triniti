@@ -11,7 +11,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
-import { Color, FontFamily } from '../../GlobalStyles';
+import { Color, FontFamily, Shadows } from '../../GlobalStyles';
+import EmptyState from '../../components/EmptyState';
 import { db } from '../../Firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { COLLECTIONS } from '../../constants/collections';
@@ -84,7 +85,11 @@ export const CallsContent = ({ patientName, patientId }) => {
         </View>
       ))}
       {appointments.length === 0 && (
-        <Text style={styles.emptyText}>No upcoming appointments</Text>
+        <EmptyState
+          icon="calendar-outline"
+          title="No appointments"
+          message="No upcoming appointments scheduled."
+        />
       )}
     </ScrollView>
   );
@@ -122,17 +127,14 @@ const styles = StyleSheet.create({
   },
   contentShadow: {
     flex: 1,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     backgroundColor: Color.colorWhite,
-    shadowColor: Color.colorBlack,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6
+    ...Shadows.container
   },
   contentArea: {
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24
   },
   scrollContent: {
     paddingTop: 30,

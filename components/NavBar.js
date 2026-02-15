@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
-import { Color } from '../GlobalStyles';
+import { Color, Shadows } from '../GlobalStyles';
 
 const DEFAULT_TABS = [
   { name: 'PatientProfile', icon: 'house', iconSet: 'FontAwesome6', label: 'Home' },
@@ -52,12 +52,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '12%',
     backgroundColor: Color.colorWhite,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
-    shadowColor: Color.colorBlack,
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 10
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    ...Shadows.small
   }
 });
 

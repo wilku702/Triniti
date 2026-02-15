@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Color, FontFamily } from '../GlobalStyles';
+import EmptyState from '../components/EmptyState';
 import { useAuth } from '../context/AuthContext';
 import useChat from '../hooks/useChat';
 import { formatChatTimestamp } from '../utils/dateFormatters';
@@ -98,7 +99,11 @@ const Chat = () => {
             contentContainerStyle={styles.messageList}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>No messages yet. Say hello!</Text>
+                <EmptyState
+                  icon="chatbubbles-outline"
+                  title="No messages yet"
+                  message="Say hello to start the conversation!"
+                />
               </View>
             }
           />
@@ -152,8 +157,9 @@ const styles = StyleSheet.create({
   chatArea: {
     flex: 1,
     backgroundColor: Color.colorWhite,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    overflow: 'hidden'
   },
   loadingContainer: {
     flex: 1,

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { Color, FontFamily } from '../GlobalStyles';
+import { Color, FontFamily, Shadows } from '../GlobalStyles';
 import { useAuth } from '../context/AuthContext';
 import { ROUTES } from '../constants/routes';
 
@@ -100,37 +100,31 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: Color.blue,
-    height: '18%',
+    height: '14%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10
+    paddingHorizontal: 20,
+    paddingTop: '6%'
   },
   headerTitle: {
-    fontSize: 34,
+    fontSize: 28,
     fontFamily: FontFamily.nunitoBold,
     fontWeight: 'bold',
-    color: Color.colorWhite,
-    top: '7%'
+    color: Color.colorWhite
   },
-  leftIcon: {
-    left: '60%',
-    top: '18%'
-  },
+  leftIcon: {},
   contentShadow: {
     flex: 1,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     backgroundColor: Color.colorWhite,
-    shadowColor: Color.colorBlack,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6
+    ...Shadows.container
   },
   contentArea: {
     flex: 1,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     paddingTop: 30,
     paddingHorizontal: 24
   },

@@ -13,7 +13,8 @@ import { Calendar } from 'react-native-calendars';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
-import { Color, FontFamily } from '../../GlobalStyles';
+import { Color, FontFamily, Shadows } from '../../GlobalStyles';
+import EmptyState from '../../components/EmptyState';
 import { db } from '../../Firebase';
 import { collection, getDocs, addDoc, query, orderBy } from 'firebase/firestore';
 import { COLLECTIONS } from '../../constants/collections';
@@ -211,7 +212,11 @@ export const MoodContent = ({ patientName, patientId }) => {
       </Text>
 
       {displayedEntries.length === 0 && (
-        <Text style={styles.noEntriesText}>No mood entries for this date</Text>
+        <EmptyState
+          icon="happy-outline"
+          title="No entries"
+          message="No mood entries for this date."
+        />
       )}
 
       {displayedEntries.map((entry) => {
@@ -273,17 +278,14 @@ const styles = StyleSheet.create({
   },
   contentShadow: {
     flex: 1,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     backgroundColor: Color.colorWhite,
-    shadowColor: Color.colorBlack,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6
+    ...Shadows.container
   },
   contentArea: {
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24
   },
   scrollContent: {
     paddingTop: 30,

@@ -14,7 +14,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../Firebase';
 import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
-import { Color, FontFamily } from '../../GlobalStyles';
+import { Color, FontFamily, Shadows } from '../../GlobalStyles';
 import { COLLECTIONS } from '../../constants/collections';
 import { validateRequired, validateAge, validatePhone } from '../../utils/validation';
 
@@ -191,17 +191,14 @@ const styles = StyleSheet.create({
   },
   contentShadow: {
     flex: 1,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     backgroundColor: Color.colorWhite,
-    shadowColor: Color.colorBlack,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6
+    ...Shadows.container
   },
   contentArea: {
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24
   },
   loadingContainer: {
     flex: 1,
@@ -236,13 +233,13 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 48,
-    borderWidth: 1,
-    borderColor: Color.dividerGray,
-    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: Color.inputBorder,
+    borderRadius: 12,
     paddingHorizontal: 14,
     fontSize: 16,
     fontFamily: FontFamily.nunitoRegular,
-    backgroundColor: Color.colorWhite
+    backgroundColor: Color.inputBg
   },
   notesInput: {
     height: 100,

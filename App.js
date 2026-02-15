@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
@@ -32,19 +33,20 @@ const App = () => {
   return (
     <ErrorBoundary>
     <AuthProvider>
+      <StatusBar style="light" />
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName={ROUTES.START}
-          screenOptions={{ headerShown: false, animation: 'default' }}>
-          <Stack.Screen name={ROUTES.START} component={Start} />
-          <Stack.Screen name={ROUTES.STAFF_LOGIN} component={StaffLogin} />
-          <Stack.Screen name={ROUTES.FAMILY_LOGIN} component={FamilyLogin} />
-          <Stack.Screen name={ROUTES.DASHBOARD} component={Dashboard} />
-          <Stack.Screen name={ROUTES.PATIENT_TABS} component={PatientTabs} />
-          <Stack.Screen name={ROUTES.ACTIVITY} component={Activity} />
-          <Stack.Screen name={ROUTES.ACCOUNT_SETTINGS} component={AccountSettings} />
-          <Stack.Screen name={ROUTES.FAMILY_TABS} component={FamilyTabs} />
-          <Stack.Screen name={ROUTES.CHAT} component={Chat} />
+          screenOptions={{ headerShown: false }}>
+          <Stack.Screen name={ROUTES.START} component={Start} options={{ animation: 'fade' }} />
+          <Stack.Screen name={ROUTES.STAFF_LOGIN} component={StaffLogin} options={{ animation: 'fade' }} />
+          <Stack.Screen name={ROUTES.FAMILY_LOGIN} component={FamilyLogin} options={{ animation: 'fade' }} />
+          <Stack.Screen name={ROUTES.DASHBOARD} component={Dashboard} options={{ animation: 'fade_from_bottom' }} />
+          <Stack.Screen name={ROUTES.PATIENT_TABS} component={PatientTabs} options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name={ROUTES.ACTIVITY} component={Activity} options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name={ROUTES.ACCOUNT_SETTINGS} component={AccountSettings} options={{ animation: 'slide_from_bottom' }} />
+          <Stack.Screen name={ROUTES.FAMILY_TABS} component={FamilyTabs} options={{ animation: 'fade_from_bottom' }} />
+          <Stack.Screen name={ROUTES.CHAT} component={Chat} options={{ animation: 'slide_from_bottom' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

@@ -17,6 +17,7 @@ import LoadingState from '../../components/LoadingState';
 import ErrorState from '../../components/ErrorState';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Color, FontFamily, Shadows } from '../../GlobalStyles';
+import EmptyState from '../../components/EmptyState';
 import { ROUTES } from '../../constants/routes';
 import { resolveImage } from '../../data/activityImages';
 import useActivities from '../../hooks/useActivities';
@@ -89,7 +90,11 @@ export const PatientProfileContent = ({ patientName, patientId, navigation }) =>
         </Text>
 
         {Object.keys(activitiesGroupedByDate).length === 0 && (
-          <Text style={styles.emptyText}>No activities scheduled yet.</Text>
+          <EmptyState
+            icon="calendar-outline"
+            title="No activities yet"
+            message="Tap the + button to schedule an activity."
+          />
         )}
 
         <View style={styles.activityContainerPosts}>
@@ -170,12 +175,13 @@ const styles = StyleSheet.create({
   },
   activityContainer: {
     flex: 1,
-    borderRadius: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     ...Shadows.container
   },
   scrollBody: {
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     backgroundColor: Color.colorWhite
   },
   scheduleTitle: {

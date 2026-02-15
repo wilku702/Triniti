@@ -89,8 +89,8 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
     shadowOpacity: 1,
-    borderTopLeftRadius: Border.br_21xl,
-    borderTopRightRadius: Border.br_21xl,
+    borderTopLeftRadius: Border.br_xl,
+    borderTopRightRadius: Border.br_xl,
     backgroundColor: Color.colorWhite
   },
   whitelogoIcon: {
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   },
   loginLayout: {
-    borderRadius: Border.br_mini,
+    borderRadius: Border.br_md,
     width: '52%',
     height: 48,
     position: 'absolute',

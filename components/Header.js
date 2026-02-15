@@ -56,27 +56,21 @@ const Header = ({ headerName, leftIconName, rightIconName, onLeftPress, onRightP
 const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: Color.blue,
-    height: '18%',
+    height: '14%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10
+    paddingHorizontal: 20,
+    paddingTop: '6%'
   },
   headerTitle: {
-    fontSize: 34,
+    fontSize: 28,
     fontFamily: FontFamily.nunitoBold,
     color: Color.colorWhite,
-    fontWeight: 'bold',
-    top: '7%'
+    fontWeight: 'bold'
   },
-  leftIcon: {
-    left: '60%',
-    top: '18%'
-  },
-  rightIcon: {
-    right: '60%',
-    top: '18%'
-  }
+  leftIcon: {},
+  rightIcon: {}
 });
 
 export default Header;

@@ -108,15 +108,15 @@ const styles = StyleSheet.create({
   },
   contentArea: {
     flex: 1,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     backgroundColor: Color.colorWhite
   },
   heroImage: {
     width: '100%',
     height: 250,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24
   },
   detailsContainer: {
     padding: 24

@@ -114,17 +114,19 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: Color.colorBlack,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    fontFamily: FontFamily.nunitoRegular
+    borderWidth: 1.5,
+    borderColor: Color.inputBorder,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    fontFamily: FontFamily.nunitoRegular,
+    backgroundColor: Color.inputBg,
+    fontSize: 16
   },
   loginButton: {
     width: '100%',
     backgroundColor: Color.buttonBlue,
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 12,
     alignItems: 'center',
     marginBottom: 20
   },
@@ -141,8 +143,8 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: Color.blue,
-    textDecorationLine: 'underline',
-    fontFamily: FontFamily.nunitoRegular
+    fontFamily: FontFamily.nunitoMedium,
+    fontSize: 14
   }
 });
 

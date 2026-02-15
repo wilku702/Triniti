@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
   },
   contentShadow: {
     flex: 1,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     backgroundColor: Color.colorWhite,
     ...Shadows.container
   }

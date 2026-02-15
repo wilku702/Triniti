@@ -9,10 +9,11 @@ import {
 } from 'react-native';
 import Header from '../../components/Header';
 import PatientButton from '../../components/PatientButton';
+import EmptyState from '../../components/EmptyState';
 import { useNavigation } from '@react-navigation/native';
 import { db } from '../../Firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import { Color, FontFamily } from '../../GlobalStyles';
+import { Color, FontFamily, Shadows } from '../../GlobalStyles';
 import { ROUTES } from '../../constants/routes';
 import { COLLECTIONS } from '../../constants/collections';
 
@@ -94,11 +95,11 @@ const Dashboard = () => {
             )}
 
             {!loading && !error && filteredPatients.length === 0 && (
-              <View style={styles.centerContent}>
-                <Text style={styles.emptyText}>
-                  {searchQuery ? 'No patients match your search.' : 'No patients found.'}
-                </Text>
-              </View>
+              <EmptyState
+                icon={searchQuery ? 'search' : 'people'}
+                title={searchQuery ? 'No matches' : 'No patients'}
+                message={searchQuery ? 'No patients match your search.' : 'No patients found.'}
+              />
             )}
 
             {!loading && !error && filteredPatients.length > 0 && (
@@ -127,15 +128,14 @@ const styles = StyleSheet.create({
   },
   patientContainerShadow: {
     backgroundColor: Color.lightGray,
-    borderRadius: 45,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     flex: 1,
-    shadowColor: Color.colorBlack,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6
+    ...Shadows.container
   },
   patientContainer: {
-    borderRadius: 45,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     height: '100%',
     overflow: 'hidden'
   },
@@ -144,15 +144,16 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   searchBar: {
-    height: 40,
+    height: 44,
     width: '90%',
     marginTop: 40,
     marginBottom: 16,
-    borderWidth: 1.2,
-    borderColor: Color.colorBlack,
+    borderWidth: 1.5,
+    borderColor: Color.inputBorder,
     borderRadius: 12,
-    paddingLeft: 10,
-    fontFamily: FontFamily.nunitoRegular
+    paddingHorizontal: 14,
+    fontFamily: FontFamily.nunitoRegular,
+    backgroundColor: Color.inputBg
   },
   patientsScrollContainer: {
     flexDirection: 'row',

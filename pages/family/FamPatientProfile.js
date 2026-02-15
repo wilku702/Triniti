@@ -6,6 +6,7 @@ import {
   StyleSheet
 } from 'react-native';
 import { Color, FontFamily } from '../../GlobalStyles';
+import EmptyState from '../../components/EmptyState';
 import useActivities from '../../hooks/useActivities';
 import { formatDate } from '../../utils/dateFormatters';
 import ActivityCard from '../../components/ActivityCard';
@@ -27,7 +28,11 @@ export const FamActivitiesContent = ({ patientName, patientId }) => {
 
       <View style={styles.activityContainerPosts}>
         {Object.entries(activitiesGroupedByDate).length === 0 && (
-          <Text style={styles.emptyText}>No activities found</Text>
+          <EmptyState
+            icon="calendar-outline"
+            title="No activities"
+            message="No activities found for this patient."
+          />
         )}
         {Object.entries(activitiesGroupedByDate).map(
           ([date, activities], index) => (
@@ -47,8 +52,8 @@ export const FamActivitiesContent = ({ patientName, patientId }) => {
 
 const styles = StyleSheet.create({
   scrollArea: {
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24
   },
   scrollContent: {
     paddingBottom: 120

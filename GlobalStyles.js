@@ -28,11 +28,13 @@ export const Color = {
   lightGray: '#f2f2f2',
   dividerGray: '#E0E0E0',
   patientCardBlue: '#7CB3F3',
-  navDefault: '#88b3ee',
+  navDefault: '#999',
   navActive: '#056EEC',
   textDark: '#333',
   textGray: '#666',
   errorRed: '#E53935',
+  inputBorder: '#D0D0D0',
+  inputBg: '#F9F9F9',
   // Mood colors
   moodGreat: '#4CAF50',
   moodGood: '#8BC34A',
@@ -60,41 +62,47 @@ export const IconSize = {
 };
 /* border radiuses */
 export const Border = {
-  br_sm: 5,
-  br_md: 10,
-  br_lg: 12,
-  br_mini: 15,
-  br_xl: 20,
-  br_21xl: 40,
-  br_round: 45
+  br_sm: 8,
+  br_md: 12,
+  br_lg: 16,
+  br_xl: 24,
+  br_full: 999,
+  br_screen: 24
 };
 /* Shadows */
 export const Shadows = {
+  subtle: {
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1
+  },
   small: {
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2
   },
   medium: {
     shadowColor: '#000',
     shadowOpacity: 0.1,
-    shadowRadius: 6,
+    shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 3
+    elevation: 4
   },
   large: {
     shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
     elevation: 8
   },
   container: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8
   }
 };
