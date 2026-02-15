@@ -13,6 +13,8 @@ import { useNavigation } from '@react-navigation/native';
 import { db } from '../../Firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { Color, FontFamily } from '../../GlobalStyles';
+import { ROUTES } from '../../constants/routes';
+import { COLLECTIONS } from '../../constants/collections';
 
 const Dashboard = () => {
   const navigation = useNavigation();
@@ -26,7 +28,7 @@ const Dashboard = () => {
       try {
         setLoading(true);
         setError(null);
-        const querySnapshot = await getDocs(collection(db, 'users'));
+        const querySnapshot = await getDocs(collection(db, COLLECTIONS.USERS));
         const patientList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           name: doc.data().name || 'Unknown',
@@ -49,7 +51,7 @@ const Dashboard = () => {
   );
 
   const onPatientPress = (patient) => {
-    navigation.navigate('PatientTabs', {
+    navigation.navigate(ROUTES.PATIENT_TABS, {
       patientName: patient.name,
       patientId: patient.id
     });
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 16,
     fontFamily: FontFamily.nunitoRegular,
-    color: '#E53935',
+    color: Color.errorRed,
     textAlign: 'center',
     paddingHorizontal: 20
   },

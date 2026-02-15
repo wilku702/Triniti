@@ -9,9 +9,12 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Color, FontFamily } from '../GlobalStyles';
+import { useAuth } from '../context/AuthContext';
+import { ROUTES } from '../constants/routes';
 
 const AccountSettings = () => {
   const navigation = useNavigation();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -19,10 +22,11 @@ const AccountSettings = () => {
       {
         text: 'Log Out',
         style: 'destructive',
-        onPress: () => {
+        onPress: async () => {
+          await logout();
           navigation.reset({
             index: 0,
-            routes: [{ name: 'Start' }]
+            routes: [{ name: ROUTES.START }]
           });
         }
       }

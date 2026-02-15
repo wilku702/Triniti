@@ -2,16 +2,17 @@
 export const FontFamily = {
   nunitoRegular: 'Nunito-Regular',
   nunitoMedium: 'Nunito-Medium',
-  nunitoBold: 'Nunito-Bold',
-  pageH1: 'Nunito-Bold'
+  nunitoBold: 'Nunito-Bold'
 };
 /* font sizes */
 export const FontSize = {
+  size_xs: 11,
   size_sm: 14,
   size_base: 16,
   size_lg: 18,
-  size_xl: 24,
-  pageH1_size: 32,
+  size_xl: 22,
+  size_2xl: 24,
+  size_3xl: 28,
   size_header: 34,
   size_welcome: 48
 };
@@ -31,10 +32,69 @@ export const Color = {
   navActive: '#056EEC',
   textDark: '#333',
   textGray: '#666',
-  errorRed: '#E53935'
+  errorRed: '#E53935',
+  // Mood colors
+  moodGreat: '#4CAF50',
+  moodGood: '#8BC34A',
+  moodOkay: '#FFC107',
+  moodLow: '#FF9800',
+  moodBad: '#F44336'
+};
+/* Spacing scale */
+export const Spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+  navBarOffset: 120
+};
+/* Icon sizes */
+export const IconSize = {
+  sm: 16,
+  md: 20,
+  lg: 24,
+  xl: 32,
+  xxl: 40
 };
 /* border radiuses */
 export const Border = {
+  br_sm: 5,
+  br_md: 10,
+  br_lg: 12,
   br_mini: 15,
-  br_21xl: 40
+  br_xl: 20,
+  br_21xl: 40,
+  br_round: 45
+};
+/* Shadows */
+export const Shadows = {
+  small: {
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2
+  },
+  medium: {
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3
+  },
+  large: {
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8
+  },
+  container: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6
+  }
 };

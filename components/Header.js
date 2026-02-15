@@ -3,13 +3,21 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Color, FontFamily } from '../GlobalStyles';
+import { ROUTES } from '../constants/routes';
 
-const Header = ({ headerName, leftIconName, rightIconName }) => {
+const Header = ({ headerName, leftIconName, rightIconName, onLeftPress, onRightPress }) => {
   const navigation = useNavigation();
+
+  const handleLeftPress = onLeftPress || (() => navigation.navigate(ROUTES.DASHBOARD));
+  const handleRightPress = onRightPress || (() => navigation.navigate(ROUTES.ACCOUNT_SETTINGS));
 
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
+      <TouchableOpacity
+        onPress={handleLeftPress}
+        activeOpacity={0.6}
+        accessibilityLabel="Go to dashboard"
+        accessibilityRole="button">
         <Ionicons
           style={styles.leftIcon}
           name={leftIconName}
@@ -18,9 +26,15 @@ const Header = ({ headerName, leftIconName, rightIconName }) => {
         />
       </TouchableOpacity>
 
-      <Text style={styles.headerTitle}> {headerName} </Text>
+      <Text style={styles.headerTitle} accessibilityRole="header">
+        {' '}{headerName}{' '}
+      </Text>
 
-      <TouchableOpacity onPress={() => navigation.navigate('AccountSettings')}>
+      <TouchableOpacity
+        onPress={handleRightPress}
+        activeOpacity={0.6}
+        accessibilityLabel="Account settings"
+        accessibilityRole="button">
         <Ionicons
           style={styles.rightIcon}
           name={rightIconName}

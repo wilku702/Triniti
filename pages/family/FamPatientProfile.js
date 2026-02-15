@@ -1,69 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   ScrollView,
-  StyleSheet,
-  Image,
-  ActivityIndicator
+  StyleSheet
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Color, FontFamily } from '../../GlobalStyles';
-import { db } from '../../Firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { resolveImage } from '../../data/activityImages';
+import { Color, FontFamily, Shadows } from '../../GlobalStyles';
+import { ROUTES } from '../../constants/routes';
+import { useAuth } from '../../context/AuthContext';
+import useActivities from '../../hooks/useActivities';
+import { formatDate } from '../../utils/dateFormatters';
+import ActivityCard from '../../components/ActivityCard';
+import Divider from '../../components/Divider';
+import LoadingState from '../../components/LoadingState';
+import ErrorState from '../../components/ErrorState';
 
 const FamPatientProfile = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { patientName, patientId } = route.params;
-  const [activitiesGroupedByDate, setActivitiesGroupedByDate] = useState({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        const activitiesRef = collection(db, 'users', patientId, 'activities');
-        const q = query(activitiesRef, orderBy('date', 'desc'));
-        const snapshot = await getDocs(q);
-
-        const grouped = {};
-        snapshot.docs.forEach((doc) => {
-          const data = doc.data();
-          const dateObj = data.date.toDate();
-          const dateKey = new Date(
-            dateObj.getFullYear(),
-            dateObj.getMonth(),
-            dateObj.getDate()
-          ).toString();
-
-          if (!grouped[dateKey]) grouped[dateKey] = [];
-          grouped[dateKey].push({
-            id: doc.id,
-            title: data.title,
-            time: data.time,
-            image: resolveImage(data.imageKey)
-          });
-        });
-        setActivitiesGroupedByDate(grouped);
-      } catch (error) {
-        console.error('Error fetching activities:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (patientId) fetchActivities();
-  }, [patientId]);
-
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  const { logout } = useAuth();
+  const { activitiesGroupedByDate, loading, error, refetch } = useActivities(patientId);
 
   return (
     <View style={styles.container}>
@@ -74,10 +33,11 @@ const FamPatientProfile = () => {
           name="log-out-outline"
           size={28}
           color={Color.colorWhite}
-          onPress={() => {
+          onPress={async () => {
+            await logout();
             navigation.reset({
               index: 0,
-              routes: [{ name: 'Start' }]
+              routes: [{ name: ROUTES.START }]
             });
           }}
         />
@@ -87,10 +47,9 @@ const FamPatientProfile = () => {
         <Text style={styles.scheduleTitle}>Activity Schedule</Text>
 
         {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Color.blue} />
-            <Text style={styles.loadingText}>Loading activities...</Text>
-          </View>
+          <LoadingState message="Loading activities..." />
+        ) : error ? (
+          <ErrorState message={error} onRetry={refetch} />
         ) : (
           <View style={styles.activityContainerPosts}>
             {Object.entries(activitiesGroupedByDate).length === 0 && (
@@ -99,23 +58,10 @@ const FamPatientProfile = () => {
             {Object.entries(activitiesGroupedByDate).map(
               ([date, activities], index) => (
                 <View key={date}>
-                  {index !== 0 && <View style={styles.divider} />}
+                  {index !== 0 && <Divider />}
                   <Text style={styles.dateHeader}>{formatDate(date)}</Text>
                   {activities.map((activity) => (
-                    <View key={activity.id} style={styles.activityItem}>
-                      {activity.image && (
-                        <Image
-                          source={activity.image}
-                          style={styles.activityImage}
-                        />
-                      )}
-                      <View style={styles.activityContent}>
-                        <Text style={styles.activityTitle}>
-                          {activity.title}
-                        </Text>
-                        <Text style={styles.activityTime}>{activity.time}</Text>
-                      </View>
-                    </View>
+                    <ActivityCard key={activity.id} activity={activity} />
                   ))}
                 </View>
               )
@@ -161,16 +107,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginLeft: 24
   },
-  loadingContainer: {
-    alignItems: 'center',
-    marginTop: 40
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    fontFamily: FontFamily.nunitoRegular,
-    color: Color.textGray
-  },
   emptyText: {
     fontSize: 16,
     fontFamily: FontFamily.nunitoRegular,
@@ -188,51 +124,6 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.nunitoRegular,
     color: Color.textGray,
     paddingBottom: 5
-  },
-  divider: {
-    height: 2,
-    backgroundColor: Color.dividerGray,
-    marginBottom: 10,
-    marginTop: 10
-  },
-  activityItem: {
-    flexDirection: 'row',
-    backgroundColor: Color.colorWhite,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginTop: 10,
-    marginBottom: 5,
-    shadowColor: Color.colorBlack,
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3
-  },
-  activityImage: {
-    width: 70,
-    height: 70,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-    backgroundColor: Color.colorBlack
-  },
-  activityContent: {
-    flex: 1,
-    marginLeft: 15,
-    justifyContent: 'center',
-    paddingVertical: 10
-  },
-  activityTitle: {
-    fontSize: 18,
-    fontFamily: FontFamily.nunitoMedium,
-    fontWeight: '500',
-    color: Color.textDark,
-    paddingBottom: 5
-  },
-  activityTime: {
-    fontSize: 14,
-    fontFamily: FontFamily.nunitoRegular,
-    color: Color.textGray
   }
 });
 

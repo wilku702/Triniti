@@ -9,9 +9,12 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db, auth } from '../../Firebase';
+import { db } from '../../Firebase';
+import { useAuth } from '../../context/AuthContext';
+import { ROUTES } from '../../constants/routes';
+import { COLLECTIONS } from '../../constants/collections';
+import { validateLoginFields } from '../../utils/validation';
 import { Color, FontFamily } from '../../GlobalStyles';
 
 const FamilyLogin = () => {
@@ -19,30 +22,33 @@ const FamilyLogin = () => {
   const [password, setPassword] = useState('');
   const [loggingIn, setLoggingIn] = useState(false);
   const navigation = useNavigation();
+  const { login } = useAuth();
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Required', 'Please enter both email and password.');
+    const validationError = validateLoginFields(email, password);
+    if (validationError) {
+      Alert.alert('Required', validationError);
       return;
     }
 
     setLoggingIn(true);
     try {
-      await signInWithEmailAndPassword(auth, email.trim(), password);
+      const credential = await login(email.trim(), password, 'family');
+      const uid = credential.user.uid;
 
-      // After auth succeeds, look up Betty Johnson's patient record
-      const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('name', '==', 'Betty Johnson'));
+      // Look up the patient linked to this family member's UID
+      const usersRef = collection(db, COLLECTIONS.USERS);
+      const q = query(usersRef, where('familyUid', '==', uid));
       const snapshot = await getDocs(q);
 
       if (!snapshot.empty) {
         const patientDoc = snapshot.docs[0];
-        navigation.navigate('FamPatientProfile', {
+        navigation.navigate(ROUTES.FAM_PATIENT_PROFILE, {
           patientName: patientDoc.data().name,
           patientId: patientDoc.id
         });
       } else {
-        Alert.alert('Error', 'Could not find patient data.');
+        Alert.alert('Error', 'No patient is linked to this account. Please contact your facility.');
       }
     } catch (error) {
       let message = 'Login failed. Please try again.';
@@ -88,6 +94,7 @@ const FamilyLogin = () => {
       <TouchableOpacity
         style={[styles.loginButton, loggingIn && { opacity: 0.7 }]}
         onPress={handleLogin}
+        activeOpacity={0.6}
         disabled={loggingIn}>
         {loggingIn ? (
           <ActivityIndicator color="white" />
@@ -96,10 +103,10 @@ const FamilyLogin = () => {
         )}
       </TouchableOpacity>
       <View style={styles.linkContainer}>
-        <TouchableOpacity onPress={handleForgotPassword}>
+        <TouchableOpacity onPress={handleForgotPassword} activeOpacity={0.6}>
           <Text style={styles.linkText}>Forgot Password</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleCreateAccount}>
+        <TouchableOpacity onPress={handleCreateAccount} activeOpacity={0.6}>
           <Text style={styles.linkText}>Create Account</Text>
         </TouchableOpacity>
       </View>

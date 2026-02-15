@@ -1,11 +1,16 @@
 import React from 'react';
 import { Image } from 'expo-image';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
-import { Color, FontFamily } from '../GlobalStyles';
+import { Color, FontFamily, Shadows } from '../GlobalStyles';
 
-const PatientButton = ({ onPress, patientName, image }) => {
+const PatientButton = React.memo(({ onPress, patientName, image }) => {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.button}
+      onPress={onPress}
+      activeOpacity={0.6}
+      accessibilityLabel={`View ${patientName}'s profile`}
+      accessibilityRole="button">
       <View style={styles.topSection}>
         <Image source={{ uri: image }} style={styles.image} contentFit="cover" />
       </View>
@@ -14,7 +19,7 @@ const PatientButton = ({ onPress, patientName, image }) => {
       </View>
     </TouchableOpacity>
   );
-};
+});
 
 const styles = StyleSheet.create({
   button: {
@@ -24,10 +29,7 @@ const styles = StyleSheet.create({
     width: '42%',
     height: 120,
     backgroundColor: Color.colorWhite,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5
+    ...Shadows.small
   },
   image: {
     width: '100%',

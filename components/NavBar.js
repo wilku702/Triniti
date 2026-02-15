@@ -19,15 +19,24 @@ const NavBar = ({ navigation, patientName, patientId, specialIcon, onTabChange }
   return (
     <View style={styles.navbarContainer}>
       <TouchableOpacity
-        onPress={() => handlePress('PatientProfile', 'PatientProfile')}>
+        onPress={() => handlePress('PatientProfile', 'PatientProfile')}
+        activeOpacity={0.6}
+        accessibilityLabel="Home"
+        accessibilityRole="tab">
         <FontAwesome6 name="house" size={40} color={getIconColor('house')} />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => handlePress('Calls', 'Calls')}>
+        onPress={() => handlePress('Calls', 'Calls')}
+        activeOpacity={0.6}
+        accessibilityLabel="Appointments"
+        accessibilityRole="tab">
         <Ionicons name="calendar" size={40} color={getIconColor('calendar')} />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => handlePress('Mood', 'Mood')}>
+        onPress={() => handlePress('Mood', 'Mood')}
+        activeOpacity={0.6}
+        accessibilityLabel="Mood tracking"
+        accessibilityRole="tab">
         <FontAwesome6
           name="chart-line"
           size={40}
@@ -35,7 +44,10 @@ const NavBar = ({ navigation, patientName, patientId, specialIcon, onTabChange }
         />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => handlePress('EditInfo', 'EditInfo')}>
+        onPress={() => handlePress('EditInfo', 'EditInfo')}
+        activeOpacity={0.6}
+        accessibilityLabel="Patient info"
+        accessibilityRole="tab">
         <Ionicons
           name="person-sharp"
           size={40}

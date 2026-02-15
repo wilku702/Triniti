@@ -14,6 +14,7 @@ import { doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../Firebase';
 import Header from '../../components/Header';
 import { Color, FontFamily } from '../../GlobalStyles';
+import { COLLECTIONS } from '../../constants/collections';
 
 const Activity = () => {
   const navigation = useNavigation();
@@ -39,7 +40,7 @@ const Activity = () => {
           onPress: async () => {
             try {
               await deleteDoc(
-                doc(db, 'users', patientId, 'activities', activityDocumentId)
+                doc(db, COLLECTIONS.USERS, patientId, COLLECTIONS.ACTIVITIES, activityDocumentId)
               );
               navigation.goBack();
             } catch (error) {

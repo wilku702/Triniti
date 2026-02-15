@@ -9,16 +9,17 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Border, Color, FontFamily, FontSize } from '../../GlobalStyles';
+import { ROUTES } from '../../constants/routes';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const StartPage = ({ navigation }) => {
   const handleStaffLoginPress = () => {
-    navigation.navigate('StaffLogin');
+    navigation.navigate(ROUTES.STAFF_LOGIN);
   };
 
   const handleFamilyLoginPress = () => {
-    navigation.navigate('FamilyLogin');
+    navigation.navigate(ROUTES.FAMILY_LOGIN);
   };
 
   return (

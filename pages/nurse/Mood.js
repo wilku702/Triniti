@@ -16,13 +16,14 @@ import NavBar from '../../components/NavBar';
 import { Color, FontFamily } from '../../GlobalStyles';
 import { db } from '../../Firebase';
 import { collection, getDocs, addDoc, query, orderBy } from 'firebase/firestore';
+import { COLLECTIONS } from '../../constants/collections';
 
 const MOOD_OPTIONS = [
-  { label: 'Great', icon: 'sentiment-very-satisfied', color: '#4CAF50' },
-  { label: 'Good', icon: 'sentiment-satisfied', color: '#8BC34A' },
-  { label: 'Okay', icon: 'sentiment-neutral', color: '#FFC107' },
-  { label: 'Low', icon: 'sentiment-dissatisfied', color: '#FF9800' },
-  { label: 'Bad', icon: 'sentiment-very-dissatisfied', color: '#F44336' }
+  { label: 'Great', icon: 'sentiment-very-satisfied', color: Color.moodGreat },
+  { label: 'Good', icon: 'sentiment-satisfied', color: Color.moodGood },
+  { label: 'Okay', icon: 'sentiment-neutral', color: Color.moodOkay },
+  { label: 'Low', icon: 'sentiment-dissatisfied', color: Color.moodLow },
+  { label: 'Bad', icon: 'sentiment-very-dissatisfied', color: Color.moodBad }
 ];
 
 export const MoodContent = ({ patientName, patientId }) => {
@@ -35,7 +36,7 @@ export const MoodContent = ({ patientName, patientId }) => {
     const fetchMoodEntries = async () => {
       try {
         setLoading(true);
-        const moodRef = collection(db, 'users', patientId, 'moodEntries');
+        const moodRef = collection(db, COLLECTIONS.USERS, patientId, COLLECTIONS.MOOD_ENTRIES);
         const q = query(moodRef, orderBy('date', 'desc'));
         const snapshot = await getDocs(q);
         const entries = snapshot.docs.map((doc) => ({
@@ -131,7 +132,7 @@ export const MoodContent = ({ patientName, patientId }) => {
 
     try {
       const docRef = await addDoc(
-        collection(db, 'users', patientId, 'moodEntries'),
+        collection(db, COLLECTIONS.USERS, patientId, COLLECTIONS.MOOD_ENTRIES),
         entryData
       );
       const newEntry = { id: docRef.id, ...entryData };

@@ -14,6 +14,7 @@ import NavBar from '../../components/NavBar';
 import { Color, FontFamily } from '../../GlobalStyles';
 import { db } from '../../Firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import { COLLECTIONS } from '../../constants/collections';
 
 export const CallsContent = ({ patientName, patientId }) => {
   const [appointments, setAppointments] = useState([]);
@@ -23,7 +24,7 @@ export const CallsContent = ({ patientName, patientId }) => {
     const fetchAppointments = async () => {
       try {
         setLoading(true);
-        const appointmentsRef = collection(db, 'users', patientId, 'appointments');
+        const appointmentsRef = collection(db, COLLECTIONS.USERS, patientId, COLLECTIONS.APPOINTMENTS);
         const snapshot = await getDocs(appointmentsRef);
         const list = snapshot.docs.map((doc) => ({
           id: doc.id,

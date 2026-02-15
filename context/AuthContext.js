@@ -7,25 +7,32 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null); // 'staff' or 'family'
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
+      if (!firebaseUser) {
+        setUserRole(null);
+      }
       setLoading(false);
     });
     return unsubscribe;
   }, []);
 
-  const login = async (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+  const login = async (email, password, role) => {
+    const credential = await signInWithEmailAndPassword(auth, email, password);
+    setUserRole(role);
+    return credential;
   };
 
   const logout = async () => {
     await signOut(auth);
+    setUserRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, userRole, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

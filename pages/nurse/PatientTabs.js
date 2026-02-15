@@ -7,7 +7,7 @@ import { PatientProfileContent } from './PatientProfile';
 import { CallsContent } from './Calls';
 import { MoodContent } from './Mood';
 import { EditInfoContent } from './EditInfo';
-import { Color } from '../../GlobalStyles';
+import { Color, Shadows } from '../../GlobalStyles';
 
 const TAB_TO_ICON = {
   PatientProfile: 'house',
@@ -19,8 +19,8 @@ const TAB_TO_ICON = {
 const PatientTabs = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { patientName, patientId, initialTab } = route.params;
-  const [activeTab, setActiveTab] = useState(initialTab || 'PatientProfile');
+  const { patientName, patientId } = route.params;
+  const [activeTab, setActiveTab] = useState('PatientProfile');
 
   const formatShortName = (fullName) => {
     const parts = fullName.split(' ');
@@ -73,10 +73,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     backgroundColor: Color.colorWhite,
-    shadowColor: Color.colorBlack,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6
+    ...Shadows.container
   }
 });
 

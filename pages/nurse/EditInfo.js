@@ -15,6 +15,8 @@ import { db } from '../../Firebase';
 import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
 import { Color, FontFamily } from '../../GlobalStyles';
+import { COLLECTIONS } from '../../constants/collections';
+import { validateRequired, validateAge, validatePhone } from '../../utils/validation';
 
 export const EditInfoContent = ({ patientName, patientId }) => {
   const [name, setName] = useState(patientName);
@@ -28,7 +30,7 @@ export const EditInfoContent = ({ patientName, patientId }) => {
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
-        const docSnap = await getDoc(doc(db, 'users', patientId));
+        const docSnap = await getDoc(doc(db, COLLECTIONS.USERS, patientId));
         if (docSnap.exists()) {
           const data = docSnap.data();
           setName(data.name || patientName);
@@ -47,14 +49,16 @@ export const EditInfoContent = ({ patientName, patientId }) => {
   }, [patientId]);
 
   const handleSave = async () => {
-    if (!name.trim()) {
-      Alert.alert('Required', 'Patient name cannot be empty.');
-      return;
-    }
+    const nameError = validateRequired(name, 'Patient name');
+    if (nameError) { Alert.alert('Required', nameError); return; }
+    const ageError = validateAge(age);
+    if (ageError) { Alert.alert('Invalid', ageError); return; }
+    const phoneError = validatePhone(emergencyContact);
+    if (phoneError) { Alert.alert('Invalid', phoneError); return; }
 
     setSaving(true);
     try {
-      await updateDoc(doc(db, 'users', patientId), {
+      await updateDoc(doc(db, COLLECTIONS.USERS, patientId), {
         name: name.trim(),
         age: age.trim(),
         room: room.trim(),

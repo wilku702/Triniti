@@ -9,8 +9,9 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../Firebase';
+import { useAuth } from '../../context/AuthContext';
+import { ROUTES } from '../../constants/routes';
+import { validateLoginFields } from '../../utils/validation';
 import { Color, FontFamily } from '../../GlobalStyles';
 
 const StaffLogin = () => {
@@ -18,17 +19,19 @@ const StaffLogin = () => {
   const [password, setPassword] = useState('');
   const [loggingIn, setLoggingIn] = useState(false);
   const navigation = useNavigation();
+  const { login } = useAuth();
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Required', 'Please enter both email and password.');
+    const validationError = validateLoginFields(email, password);
+    if (validationError) {
+      Alert.alert('Required', validationError);
       return;
     }
 
     setLoggingIn(true);
     try {
-      await signInWithEmailAndPassword(auth, email.trim(), password);
-      navigation.navigate('Dashboard');
+      await login(email.trim(), password, 'staff');
+      navigation.navigate(ROUTES.DASHBOARD);
     } catch (error) {
       let message = 'Login failed. Please try again.';
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
@@ -73,6 +76,7 @@ const StaffLogin = () => {
       <TouchableOpacity
         style={[styles.loginButton, loggingIn && { opacity: 0.7 }]}
         onPress={handleLogin}
+        activeOpacity={0.6}
         disabled={loggingIn}>
         {loggingIn ? (
           <ActivityIndicator color="white" />
@@ -81,10 +85,10 @@ const StaffLogin = () => {
         )}
       </TouchableOpacity>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleForgotPassword}>
+        <TouchableOpacity onPress={handleForgotPassword} activeOpacity={0.6}>
           <Text style={styles.linkText}>Forgot Password</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleCreateAccount}>
+        <TouchableOpacity onPress={handleCreateAccount} activeOpacity={0.6}>
           <Text style={styles.linkText}>Create Account</Text>
         </TouchableOpacity>
       </View>

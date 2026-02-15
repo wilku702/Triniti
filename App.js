@@ -3,6 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
 
+import { AuthProvider } from './context/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
+import { ROUTES } from './constants/routes';
 import Start from './pages/authorization/Start';
 import StaffLogin from './pages/authorization/StaffLogin';
 import FamilyLogin from './pages/authorization/FamilyLogin';
@@ -26,20 +29,24 @@ const App = () => {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Start"
-        screenOptions={{ headerShown: false, animation: 'default' }}>
-        <Stack.Screen name="Start" component={Start} />
-        <Stack.Screen name="StaffLogin" component={StaffLogin} />
-        <Stack.Screen name="FamilyLogin" component={FamilyLogin} />
-        <Stack.Screen name="Dashboard" component={Dashboard} />
-        <Stack.Screen name="PatientTabs" component={PatientTabs} />
-        <Stack.Screen name="Activity" component={Activity} />
-        <Stack.Screen name="AccountSettings" component={AccountSettings} />
-        <Stack.Screen name="FamPatientProfile" component={FamPatientProfile} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ErrorBoundary>
+    <AuthProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName={ROUTES.START}
+          screenOptions={{ headerShown: false, animation: 'default' }}>
+          <Stack.Screen name={ROUTES.START} component={Start} />
+          <Stack.Screen name={ROUTES.STAFF_LOGIN} component={StaffLogin} />
+          <Stack.Screen name={ROUTES.FAMILY_LOGIN} component={FamilyLogin} />
+          <Stack.Screen name={ROUTES.DASHBOARD} component={Dashboard} />
+          <Stack.Screen name={ROUTES.PATIENT_TABS} component={PatientTabs} />
+          <Stack.Screen name={ROUTES.ACTIVITY} component={Activity} />
+          <Stack.Screen name={ROUTES.ACCOUNT_SETTINGS} component={AccountSettings} />
+          <Stack.Screen name={ROUTES.FAM_PATIENT_PROFILE} component={FamPatientProfile} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthProvider>
+    </ErrorBoundary>
   );
 };
 
