@@ -26,7 +26,11 @@
       "mcp__chrome-devtools__handle_dialog",
       "WebSearch",
       "WebFetch(domain:www.pexels.com)",
-      "mcp__chrome-devtools__new_page"
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__resize_page",
+      "mcp__chrome-devtools__wait_for",
+      "mcp__chrome-devtools__fill",
+      "mcp__chrome-devtools__press_key"
     ]
   }
 }
