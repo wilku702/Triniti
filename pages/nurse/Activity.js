@@ -10,11 +10,9 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { doc, deleteDoc } from 'firebase/firestore';
-import { db } from '../../Firebase';
 import Header from '../../components/Header';
 import { Color, FontFamily } from '../../GlobalStyles';
-import { COLLECTIONS } from '../../constants/collections';
+import { deleteActivity } from '../../services/firestore';
 
 const Activity = () => {
   const navigation = useNavigation();
@@ -39,9 +37,7 @@ const Activity = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteDoc(
-                doc(db, COLLECTIONS.USERS, patientId, COLLECTIONS.ACTIVITIES, activityDocumentId)
-              );
+              await deleteActivity(patientId, activityDocumentId);
               navigation.goBack();
             } catch (error) {
               console.error('Error deleting activity:', error);
@@ -51,10 +47,6 @@ const Activity = () => {
         }
       ]
     );
-  };
-
-  const handleEdit = () => {
-    Alert.alert('Coming Soon', 'Activity editing will be available in a future update.');
   };
 
   return (
@@ -86,7 +78,7 @@ const Activity = () => {
           </View>
 
           <View style={styles.actionRow}>
-            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+            <TouchableOpacity style={[styles.editButton, { opacity: 0.4 }]} disabled>
               <MaterialIcons name="edit" size={20} color={Color.colorWhite} />
               <Text style={styles.buttonText}>Edit</Text>
             </TouchableOpacity>

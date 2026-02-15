@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
@@ -16,11 +16,7 @@ const FAMILY_TABS = [
   { name: 'Mood', icon: 'chart-line', iconSet: 'FontAwesome6', label: 'Mood tracking' },
 ];
 
-const TAB_TO_ICON = {
-  Activities: 'house',
-  Appointments: 'calendar',
-  Mood: 'chart-line',
-};
+const TAB_TO_ICON = Object.fromEntries(FAMILY_TABS.map((t) => [t.name, t.icon]));
 
 const FamilyTabs = () => {
   const navigation = useNavigation();
@@ -30,8 +26,12 @@ const FamilyTabs = () => {
   const [activeTab, setActiveTab] = useState('Activities');
 
   const handleLogout = async () => {
-    await logout();
-    navigation.reset({ index: 0, routes: [{ name: ROUTES.START }] });
+    try {
+      await logout();
+      // Auth guard in RootNavigator automatically shows login screen
+    } catch {
+      Alert.alert('Error', 'Failed to log out. Please try again.');
+    }
   };
 
   const renderContent = () => {

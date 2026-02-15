@@ -5,15 +5,15 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions
+  useWindowDimensions
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Border, Color, FontFamily, FontSize } from '../../GlobalStyles';
 import { ROUTES } from '../../constants/routes';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
 const StartPage = ({ navigation }) => {
+  const { width, height } = useWindowDimensions();
+
   const handleStaffLoginPress = () => {
     navigation.navigate(ROUTES.STAFF_LOGIN);
   };
@@ -25,11 +25,11 @@ const StartPage = ({ navigation }) => {
   return (
     <View style={styles.startPage}>
       <Image
-        style={styles.nursingHomeBro1}
+        style={[styles.nursingHomeBro1, { height: width, width }]}
         contentFit="cover"
         source={require('../../assets/start/welcome_image.png')}
       />
-      <View style={styles.screenBodyContent}>
+      <View style={[styles.screenBodyContent, { top: height * 0.375 }]}>
         <LinearGradient
           style={styles.screenBodyContentChild}
           locations={[0, 1]}
@@ -43,15 +43,19 @@ const StartPage = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={[styles.familyLoginButton, styles.loginLayout]}
-        onPress={handleFamilyLoginPress}>
+        onPress={handleFamilyLoginPress}
+        accessibilityLabel="Log in as family member"
+        accessibilityRole="button">
         <Text style={styles.loginText}>Family Login</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.staffLoginButton, styles.loginLayout]}
-        onPress={handleStaffLoginPress}>
+        onPress={handleStaffLoginPress}
+        accessibilityLabel="Log in as staff member"
+        accessibilityRole="button">
         <Text style={styles.loginText}>Staff Login</Text>
       </TouchableOpacity>
-      <Text style={styles.welcome}>Welcome</Text>
+      <Text style={[styles.welcome, { top: height * 0.51 }]} accessibilityRole="header">Welcome</Text>
     </View>
   );
 };
@@ -66,14 +70,11 @@ const styles = StyleSheet.create({
   nursingHomeBro1: {
     top: 0,
     left: 0,
-    height: SCREEN_WIDTH,
-    width: SCREEN_WIDTH,
     position: 'absolute',
     overflow: 'hidden'
   },
   screenBodyContent: {
     position: 'absolute',
-    top: SCREEN_HEIGHT * 0.375,
     left: 0,
     right: 0,
     bottom: 0
@@ -130,7 +131,6 @@ const styles = StyleSheet.create({
   },
   welcome: {
     position: 'absolute',
-    top: SCREEN_HEIGHT * 0.51,
     alignSelf: 'center',
     fontSize: FontSize.size_welcome,
     fontFamily: FontFamily.nunitoRegular,

@@ -8,11 +8,12 @@ const useActivities = (patientId) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchActivities = async () => {
+  const fetchActivities = async (signal) => {
     try {
       setLoading(true);
       setError(null);
       const activities = await getActivities(patientId);
+      if (signal?.cancelled) return;
 
       const grouped = {};
       activities.forEach((activity) => {
@@ -30,15 +31,17 @@ const useActivities = (patientId) => {
       });
       setActivitiesGroupedByDate(grouped);
     } catch (err) {
+      if (signal?.cancelled) return;
       setError('Failed to load activities.');
-      console.error('Error fetching activities:', err);
     } finally {
-      setLoading(false);
+      if (!signal?.cancelled) setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (patientId) fetchActivities();
+    const signal = { cancelled: false };
+    if (patientId) fetchActivities(signal);
+    return () => { signal.cancelled = true; };
   }, [patientId]);
 
   const addToGroupedState = (dateKey, entry) => {
@@ -57,7 +60,7 @@ const useActivities = (patientId) => {
     activitiesGroupedByDate,
     loading,
     error,
-    refetch: fetchActivities,
+    refetch: () => fetchActivities(),
     addToGroupedState
   };
 };

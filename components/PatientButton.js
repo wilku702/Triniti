@@ -12,7 +12,9 @@ const PatientButton = React.memo(({ onPress, patientName, image }) => {
       accessibilityLabel={`View ${patientName}'s profile`}
       accessibilityRole="button">
       <View style={styles.topSection}>
-        <Image source={{ uri: image }} style={styles.image} contentFit="cover" />
+        {image ? (
+          <Image source={{ uri: image }} style={styles.image} contentFit="cover" />
+        ) : null}
       </View>
       <View style={styles.bottomSection}>
         <Text style={styles.text}>{patientName}</Text>
@@ -20,6 +22,8 @@ const PatientButton = React.memo(({ onPress, patientName, image }) => {
     </TouchableOpacity>
   );
 });
+
+PatientButton.displayName = 'PatientButton';
 
 const styles = StyleSheet.create({
   button: {

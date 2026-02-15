@@ -17,8 +17,7 @@ import { Color, FontFamily } from '../GlobalStyles';
 import EmptyState from '../components/EmptyState';
 import { useAuth } from '../context/AuthContext';
 import useChat from '../hooks/useChat';
-import { formatChatTimestamp } from '../utils/dateFormatters';
-import { getFirstName } from '../utils/dateFormatters';
+import { formatChatTimestamp, getFirstName } from '../utils/dateFormatters';
 
 const Chat = () => {
   const navigation = useNavigation();
@@ -177,11 +176,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 60,
     transform: [{ scaleY: -1 }]
-  },
-  emptyText: {
-    fontSize: 16,
-    fontFamily: FontFamily.nunitoRegular,
-    color: Color.textGray
   },
   messageBubble: {
     maxWidth: '75%',

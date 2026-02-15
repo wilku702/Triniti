@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,14 +10,10 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Calendar } from 'react-native-calendars';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import Header from '../../components/Header';
-import NavBar from '../../components/NavBar';
-import { Color, FontFamily, Shadows } from '../../GlobalStyles';
+import { Color, FontFamily } from '../../GlobalStyles';
 import EmptyState from '../../components/EmptyState';
-import { db } from '../../Firebase';
-import { collection, getDocs, addDoc, query, orderBy } from 'firebase/firestore';
-import { COLLECTIONS } from '../../constants/collections';
+import { getMoodEntries, addMoodEntry } from '../../services/firestore';
+import { getFirstName, formatDisplayDate } from '../../utils/dateFormatters';
 
 const MOOD_OPTIONS = [
   { label: 'Great', icon: 'sentiment-very-satisfied', color: Color.moodGreat },
@@ -37,13 +33,7 @@ export const MoodContent = ({ patientName, patientId }) => {
     const fetchMoodEntries = async () => {
       try {
         setLoading(true);
-        const moodRef = collection(db, COLLECTIONS.USERS, patientId, COLLECTIONS.MOOD_ENTRIES);
-        const q = query(moodRef, orderBy('date', 'desc'));
-        const snapshot = await getDocs(q);
-        const entries = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const entries = await getMoodEntries(patientId);
         setMoodEntries(entries);
       } catch (error) {
         console.error('Error fetching mood entries:', error);
@@ -58,21 +48,6 @@ export const MoodContent = ({ patientName, patientId }) => {
     return MOOD_OPTIONS.find((m) => m.label === moodLabel) || MOOD_OPTIONS[2];
   };
 
-  const getFirstName = (fullName) => {
-    return fullName.split(' ')[0];
-  };
-
-  const formatDisplayDate = (dateStr) => {
-    const [year, month, day] = dateStr.split('-').map(Number);
-    const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
   const moodByDate = useMemo(() => {
     const map = {};
     moodEntries.forEach((entry) => {
@@ -85,7 +60,11 @@ export const MoodContent = ({ patientName, patientId }) => {
 
   const todayStr = new Date().toISOString().split('T')[0];
 
-  const renderCustomDay = ({ date, state }) => {
+  const handleDayPress = useCallback((day) => {
+    setSelectedDate((prev) => (prev === day.dateString ? null : day.dateString));
+  }, []);
+
+  const renderCustomDay = useCallback(({ date, state }) => {
     const dateStr = date.dateString;
     const moodData = moodByDate[dateStr];
     const isSelected = dateStr === selectedDate;
@@ -120,11 +99,17 @@ export const MoodContent = ({ patientName, patientId }) => {
         )}
       </TouchableOpacity>
     );
-  };
+  }, [moodByDate, selectedDate, todayStr, handleDayPress]);
 
   const handleLogMood = async (mood) => {
-    setSelectedMood(mood.label);
     const today = new Date().toISOString().split('T')[0];
+    const existingEntry = moodEntries.find((e) => e.date === today);
+    if (existingEntry) {
+      Alert.alert('Already Logged', "Today's mood has already been recorded.");
+      return;
+    }
+
+    setSelectedMood(mood.label);
     const entryData = {
       date: today,
       mood: mood.label,
@@ -132,22 +117,12 @@ export const MoodContent = ({ patientName, patientId }) => {
     };
 
     try {
-      const docRef = await addDoc(
-        collection(db, COLLECTIONS.USERS, patientId, COLLECTIONS.MOOD_ENTRIES),
-        entryData
-      );
-      const newEntry = { id: docRef.id, ...entryData };
+      const docId = await addMoodEntry(patientId, entryData);
+      const newEntry = { id: docId, ...entryData };
       setMoodEntries((prev) => [newEntry, ...prev]);
     } catch (error) {
-      console.error('Error logging mood:', error);
       Alert.alert('Error', 'Failed to log mood. Please try again.');
     }
-  };
-
-  const handleDayPress = (day) => {
-    setSelectedDate(
-      selectedDate === day.dateString ? null : day.dateString
-    );
   };
 
   const displayedEntries = selectedDate
@@ -246,43 +221,7 @@ export const MoodContent = ({ patientName, patientId }) => {
   );
 };
 
-const Mood = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { patientName, patientId } = route.params;
-
-  return (
-    <View style={styles.container}>
-      <Header
-        headerName={patientName}
-        leftIconName={'grid'}
-        rightIconName={'person-circle-outline'}
-      />
-      <View style={styles.contentShadow}>
-        <MoodContent patientName={patientName} patientId={patientId} />
-      </View>
-      <NavBar
-        navigation={navigation}
-        patientName={patientName}
-        patientId={patientId}
-        specialIcon="chart-line"
-      />
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Color.blue
-  },
-  contentShadow: {
-    flex: 1,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    backgroundColor: Color.colorWhite,
-    ...Shadows.container
-  },
   contentArea: {
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24
@@ -423,13 +362,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     paddingLeft: 56
   },
-  noEntriesText: {
-    fontSize: 14,
-    fontFamily: FontFamily.nunitoRegular,
-    color: Color.textGray,
-    textAlign: 'center',
-    marginTop: 20
-  }
 });
 
-export default Mood;
+export default MoodContent;

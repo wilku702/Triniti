@@ -8,12 +8,14 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null); // 'staff' or 'family'
+  const [linkedPatient, setLinkedPatient] = useState(null); // { id, name } for family users
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       if (!firebaseUser) {
         setUserRole(null);
+        setLinkedPatient(null);
       }
       setLoading(false);
     });
@@ -29,10 +31,11 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await signOut(auth);
     setUserRole(null);
+    setLinkedPatient(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, userRole, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, userRole, linkedPatient, setLinkedPatient, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

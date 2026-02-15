@@ -8,14 +8,9 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import Header from '../../components/Header';
-import NavBar from '../../components/NavBar';
-import { Color, FontFamily, Shadows } from '../../GlobalStyles';
+import { Color, FontFamily } from '../../GlobalStyles';
 import EmptyState from '../../components/EmptyState';
-import { db } from '../../Firebase';
-import { collection, getDocs } from 'firebase/firestore';
-import { COLLECTIONS } from '../../constants/collections';
+import { getAppointments } from '../../services/firestore';
 
 export const CallsContent = ({ patientName, patientId }) => {
   const [appointments, setAppointments] = useState([]);
@@ -25,12 +20,7 @@ export const CallsContent = ({ patientName, patientId }) => {
     const fetchAppointments = async () => {
       try {
         setLoading(true);
-        const appointmentsRef = collection(db, COLLECTIONS.USERS, patientId, COLLECTIONS.APPOINTMENTS);
-        const snapshot = await getDocs(appointmentsRef);
-        const list = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const list = await getAppointments(patientId);
         const parseDate = (str) => new Date(str.replace(/^\w+, /, ''));
         list.sort((a, b) => parseDate(a.date) - parseDate(b.date));
         setAppointments(list);
@@ -95,43 +85,7 @@ export const CallsContent = ({ patientName, patientId }) => {
   );
 };
 
-const Calls = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { patientName, patientId } = route.params;
-
-  return (
-    <View style={styles.container}>
-      <Header
-        headerName={patientName}
-        leftIconName={'grid'}
-        rightIconName={'person-circle-outline'}
-      />
-      <View style={styles.contentShadow}>
-        <CallsContent patientName={patientName} patientId={patientId} />
-      </View>
-      <NavBar
-        navigation={navigation}
-        patientName={patientName}
-        patientId={patientId}
-        specialIcon="calendar"
-      />
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Color.blue
-  },
-  contentShadow: {
-    flex: 1,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    backgroundColor: Color.colorWhite,
-    ...Shadows.container
-  },
   contentArea: {
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24
@@ -202,13 +156,6 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.nunitoMedium,
     color: Color.blue
   },
-  emptyText: {
-    fontSize: 16,
-    fontFamily: FontFamily.nunitoRegular,
-    color: Color.textGray,
-    textAlign: 'center',
-    marginTop: 40
-  }
 });
 
-export default Calls;
+export default CallsContent;

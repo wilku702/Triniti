@@ -43,16 +43,32 @@ const AddActivityModal = ({ visible, onClose, onAdd }) => {
     onClose();
   };
 
-  const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || newActivity.dateTime;
+  const handleTimeChange = (event, selectedDate) => {
+    if (!selectedDate) return;
     setNewActivity((prev) => ({
       ...prev,
       dateTime: new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        currentDate.getDate()
+        prev.dateTime.getFullYear(),
+        prev.dateTime.getMonth(),
+        prev.dateTime.getDate(),
+        selectedDate.getHours(),
+        selectedDate.getMinutes()
       ),
-      time: formatTimeRange(currentDate)
+      time: formatTimeRange(selectedDate)
+    }));
+  };
+
+  const handleDatePickerChange = (event, selectedDate) => {
+    if (!selectedDate) return;
+    setNewActivity((prev) => ({
+      ...prev,
+      dateTime: new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        prev.dateTime.getHours(),
+        prev.dateTime.getMinutes()
+      )
     }));
   };
 
@@ -141,7 +157,7 @@ const AddActivityModal = ({ visible, onClose, onAdd }) => {
                   value={newActivity.dateTime}
                   mode="time"
                   display="default"
-                  onChange={handleDateChange}
+                  onChange={handleTimeChange}
                 />
               </View>
             </View>
@@ -155,7 +171,7 @@ const AddActivityModal = ({ visible, onClose, onAdd }) => {
                   value={newActivity.dateTime}
                   mode="date"
                   display="default"
-                  onChange={handleDateChange}
+                  onChange={handleDatePickerChange}
                 />
               </View>
             </View>
@@ -164,11 +180,11 @@ const AddActivityModal = ({ visible, onClose, onAdd }) => {
           <TouchableOpacity
             style={[
               styles.addActivityButton,
-              !newActivity.title.trim() && styles.addActivityButtonDisabled
+              (!newActivity.title.trim() || !newActivity.time) && styles.addActivityButtonDisabled
             ]}
             onPress={handleAdd}
             activeOpacity={0.6}
-            disabled={!newActivity.title.trim()}>
+            disabled={!newActivity.title.trim() || !newActivity.time}>
             <MaterialIcons name="add-circle-outline" size={22} color={Color.colorWhite} />
             <Text style={styles.addActivityButtonText}>Add Activity</Text>
           </TouchableOpacity>

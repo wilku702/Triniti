@@ -9,13 +9,8 @@ import {
   Alert,
   ActivityIndicator
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../Firebase';
-import Header from '../../components/Header';
-import NavBar from '../../components/NavBar';
-import { Color, FontFamily, Shadows } from '../../GlobalStyles';
-import { COLLECTIONS } from '../../constants/collections';
+import { Color, FontFamily } from '../../GlobalStyles';
+import { getPatient, updatePatient } from '../../services/firestore';
 import { validateRequired, validateAge, validatePhone } from '../../utils/validation';
 
 export const EditInfoContent = ({ patientName, patientId }) => {
@@ -31,9 +26,8 @@ export const EditInfoContent = ({ patientName, patientId }) => {
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
-        const docSnap = await getDoc(doc(db, COLLECTIONS.USERS, patientId));
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+        const data = await getPatient(patientId);
+        if (data) {
           setName(data.name || patientName);
           setAge(data.age || '');
           setRoom(data.room || '');
@@ -60,7 +54,7 @@ export const EditInfoContent = ({ patientName, patientId }) => {
 
     setSaving(true);
     try {
-      await updateDoc(doc(db, COLLECTIONS.USERS, patientId), {
+      await updatePatient(patientId, {
         name: name.trim(),
         age: age.trim(),
         room: room.trim(),
@@ -159,43 +153,7 @@ export const EditInfoContent = ({ patientName, patientId }) => {
   );
 };
 
-const EditInfo = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { patientName, patientId } = route.params;
-
-  return (
-    <View style={styles.container}>
-      <Header
-        headerName={patientName}
-        leftIconName={'grid'}
-        rightIconName={'person-circle-outline'}
-      />
-      <View style={styles.contentShadow}>
-        <EditInfoContent patientName={patientName} patientId={patientId} />
-      </View>
-      <NavBar
-        navigation={navigation}
-        patientName={patientName}
-        patientId={patientId}
-        specialIcon="person-sharp"
-      />
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Color.blue
-  },
-  contentShadow: {
-    flex: 1,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    backgroundColor: Color.colorWhite,
-    ...Shadows.container
-  },
   contentArea: {
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24
@@ -263,4 +221,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default EditInfo;
+export default EditInfoContent;

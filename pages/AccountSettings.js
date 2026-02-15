@@ -10,7 +10,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Color, FontFamily, Shadows } from '../GlobalStyles';
 import { useAuth } from '../context/AuthContext';
-import { ROUTES } from '../constants/routes';
 
 const AccountSettings = () => {
   const navigation = useNavigation();
@@ -23,11 +22,12 @@ const AccountSettings = () => {
         text: 'Log Out',
         style: 'destructive',
         onPress: async () => {
-          await logout();
-          navigation.reset({
-            index: 0,
-            routes: [{ name: ROUTES.START }]
-          });
+          try {
+            await logout();
+            // Auth guard in RootNavigator automatically shows login screen
+          } catch {
+            Alert.alert('Error', 'Failed to log out. Please try again.');
+          }
         }
       }
     ]);
@@ -58,29 +58,25 @@ const AccountSettings = () => {
         </View>
 
         <View style={styles.menuSection}>
-          <TouchableOpacity style={styles.menuItem}>
-            <Ionicons name="person-outline" size={24} color={Color.textDark} />
-            <Text style={styles.menuText}>Edit Profile</Text>
-            <Ionicons name="chevron-forward" size={20} color={Color.textGray} />
-          </TouchableOpacity>
+          <View style={[styles.menuItem, styles.menuItemDisabled]}>
+            <Ionicons name="person-outline" size={24} color={Color.dividerGray} />
+            <Text style={[styles.menuText, styles.menuTextDisabled]}>Edit Profile</Text>
+          </View>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Ionicons name="notifications-outline" size={24} color={Color.textDark} />
-            <Text style={styles.menuText}>Notifications</Text>
-            <Ionicons name="chevron-forward" size={20} color={Color.textGray} />
-          </TouchableOpacity>
+          <View style={[styles.menuItem, styles.menuItemDisabled]}>
+            <Ionicons name="notifications-outline" size={24} color={Color.dividerGray} />
+            <Text style={[styles.menuText, styles.menuTextDisabled]}>Notifications</Text>
+          </View>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Ionicons name="shield-outline" size={24} color={Color.textDark} />
-            <Text style={styles.menuText}>Privacy</Text>
-            <Ionicons name="chevron-forward" size={20} color={Color.textGray} />
-          </TouchableOpacity>
+          <View style={[styles.menuItem, styles.menuItemDisabled]}>
+            <Ionicons name="shield-outline" size={24} color={Color.dividerGray} />
+            <Text style={[styles.menuText, styles.menuTextDisabled]}>Privacy</Text>
+          </View>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <Ionicons name="help-circle-outline" size={24} color={Color.textDark} />
-            <Text style={styles.menuText}>Help & Support</Text>
-            <Ionicons name="chevron-forward" size={20} color={Color.textGray} />
-          </TouchableOpacity>
+          <View style={[styles.menuItem, styles.menuItemDisabled]}>
+            <Ionicons name="help-circle-outline" size={24} color={Color.dividerGray} />
+            <Text style={[styles.menuText, styles.menuTextDisabled]}>Help & Support</Text>
+          </View>
         </View>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -156,6 +152,12 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.nunitoMedium,
     color: Color.textDark,
     marginLeft: 14
+  },
+  menuItemDisabled: {
+    opacity: 0.4
+  },
+  menuTextDisabled: {
+    color: Color.textGray
   },
   logoutButton: {
     flexDirection: 'row',

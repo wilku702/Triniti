@@ -1,10 +1,12 @@
-import * as React from 'react';
+import React from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
 
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ROUTES } from './constants/routes';
 import Start from './pages/authorization/Start';
@@ -16,8 +18,70 @@ import Activity from './pages/nurse/Activity';
 import AccountSettings from './pages/AccountSettings';
 import FamilyTabs from './pages/family/FamilyTabs';
 import Chat from './pages/Chat';
+import { Color } from './GlobalStyles';
 
 const Stack = createNativeStackNavigator();
+
+const AuthNavigator = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name={ROUTES.START} component={Start} options={{ animation: 'fade' }} />
+      <Stack.Screen name={ROUTES.STAFF_LOGIN} component={StaffLogin} options={{ animation: 'fade' }} />
+      <Stack.Screen name={ROUTES.FAMILY_LOGIN} component={FamilyLogin} options={{ animation: 'fade' }} />
+    </Stack.Navigator>
+  );
+};
+
+const AppNavigator = () => {
+  const { userRole, linkedPatient } = useAuth();
+  const isFamilyUser = userRole === 'family' && linkedPatient;
+
+  return (
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName={isFamilyUser ? ROUTES.FAMILY_TABS : ROUTES.DASHBOARD}
+    >
+      <Stack.Screen name={ROUTES.DASHBOARD} component={Dashboard} options={{ animation: 'fade_from_bottom' }} />
+      <Stack.Screen name={ROUTES.PATIENT_TABS} component={PatientTabs} options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name={ROUTES.ACTIVITY} component={Activity} options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name={ROUTES.ACCOUNT_SETTINGS} component={AccountSettings} options={{ animation: 'slide_from_bottom' }} />
+      <Stack.Screen
+        name={ROUTES.FAMILY_TABS}
+        component={FamilyTabs}
+        initialParams={isFamilyUser ? { patientName: linkedPatient.name, patientId: linkedPatient.id } : undefined}
+        options={{ animation: 'fade_from_bottom' }}
+      />
+      <Stack.Screen name={ROUTES.CHAT} component={Chat} options={{ animation: 'slide_from_bottom' }} />
+    </Stack.Navigator>
+  );
+};
+
+const RootNavigator = () => {
+  const { user, loading, userRole, linkedPatient } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.colorWhite }}>
+        <ActivityIndicator size="large" color={Color.blue} />
+      </View>
+    );
+  }
+
+  // Family user logged in but patient lookup still in progress
+  if (user && userRole === 'family' && !linkedPatient) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.colorWhite }}>
+        <ActivityIndicator size="large" color={Color.blue} />
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      {user ? <AppNavigator /> : <AuthNavigator />}
+    </NavigationContainer>
+  );
+};
 
 const App = () => {
   const [fontsLoaded, error] = useFonts({
@@ -31,26 +95,14 @@ const App = () => {
   }
 
   return (
-    <ErrorBoundary>
-    <AuthProvider>
-      <StatusBar style="light" />
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={ROUTES.START}
-          screenOptions={{ headerShown: false }}>
-          <Stack.Screen name={ROUTES.START} component={Start} options={{ animation: 'fade' }} />
-          <Stack.Screen name={ROUTES.STAFF_LOGIN} component={StaffLogin} options={{ animation: 'fade' }} />
-          <Stack.Screen name={ROUTES.FAMILY_LOGIN} component={FamilyLogin} options={{ animation: 'fade' }} />
-          <Stack.Screen name={ROUTES.DASHBOARD} component={Dashboard} options={{ animation: 'fade_from_bottom' }} />
-          <Stack.Screen name={ROUTES.PATIENT_TABS} component={PatientTabs} options={{ animation: 'slide_from_right' }} />
-          <Stack.Screen name={ROUTES.ACTIVITY} component={Activity} options={{ animation: 'slide_from_right' }} />
-          <Stack.Screen name={ROUTES.ACCOUNT_SETTINGS} component={AccountSettings} options={{ animation: 'slide_from_bottom' }} />
-          <Stack.Screen name={ROUTES.FAMILY_TABS} component={FamilyTabs} options={{ animation: 'fade_from_bottom' }} />
-          <Stack.Screen name={ROUTES.CHAT} component={Chat} options={{ animation: 'slide_from_bottom' }} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AuthProvider>
-    </ErrorBoundary>
+    <SafeAreaProvider>
+      <ErrorBoundary>
+        <AuthProvider>
+          <StatusBar style="light" />
+          <RootNavigator />
+        </AuthProvider>
+      </ErrorBoundary>
+    </SafeAreaProvider>
   );
 };
 

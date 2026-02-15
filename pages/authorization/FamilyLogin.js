@@ -8,9 +8,7 @@ import {
   Alert,
   ActivityIndicator
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
-import { ROUTES } from '../../constants/routes';
 import { validateLoginFields } from '../../utils/validation';
 import { getPatientByFamilyUid, getPatientByFamilyEmail, linkFamilyToPatient } from '../../services/firestore';
 import { Color, FontFamily } from '../../GlobalStyles';
@@ -19,8 +17,7 @@ const FamilyLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loggingIn, setLoggingIn] = useState(false);
-  const navigation = useNavigation();
-  const { login } = useAuth();
+  const { login, logout, setLinkedPatient } = useAuth();
 
   const handleLogin = async () => {
     const validationError = validateLoginFields(email, password);
@@ -47,11 +44,12 @@ const FamilyLogin = () => {
       }
 
       if (patient) {
-        navigation.navigate(ROUTES.FAMILY_TABS, {
-          patientName: patient.name,
-          patientId: patient.id
-        });
+        // Store patient in context — RootNavigator will swap to AppNavigator
+        // once linkedPatient is set (it shows a spinner while waiting)
+        setLinkedPatient({ id: patient.id, name: patient.name });
       } else {
+        // No linked patient — sign out so auth guard returns to login
+        await logout();
         Alert.alert('Error', 'No patient is linked to this account. Please contact your facility.');
       }
     } catch (error) {
@@ -87,6 +85,9 @@ const FamilyLogin = () => {
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
+        accessibilityLabel="Email address"
+        textContentType="emailAddress"
+        autoComplete="email"
       />
       <TextInput
         style={styles.input}
@@ -94,12 +95,17 @@ const FamilyLogin = () => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        accessibilityLabel="Password"
+        textContentType="password"
+        autoComplete="password"
       />
       <TouchableOpacity
         style={[styles.loginButton, loggingIn && { opacity: 0.7 }]}
         onPress={handleLogin}
         activeOpacity={0.6}
-        disabled={loggingIn}>
+        disabled={loggingIn}
+        accessibilityLabel={loggingIn ? 'Logging in' : 'Log in'}
+        accessibilityRole="button">
         {loggingIn ? (
           <ActivityIndicator color="white" />
         ) : (

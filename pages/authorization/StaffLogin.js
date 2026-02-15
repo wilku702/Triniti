@@ -8,9 +8,7 @@ import {
   Alert,
   ActivityIndicator
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
-import { ROUTES } from '../../constants/routes';
 import { validateLoginFields } from '../../utils/validation';
 import { Color, FontFamily } from '../../GlobalStyles';
 
@@ -18,7 +16,6 @@ const StaffLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loggingIn, setLoggingIn] = useState(false);
-  const navigation = useNavigation();
   const { login } = useAuth();
 
   const handleLogin = async () => {
@@ -31,7 +28,7 @@ const StaffLogin = () => {
     setLoggingIn(true);
     try {
       await login(email.trim(), password, 'staff');
-      navigation.navigate(ROUTES.DASHBOARD);
+      // Auth state change triggers automatic navigation via RootNavigator
     } catch (error) {
       let message = 'Login failed. Please try again.';
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
@@ -65,6 +62,9 @@ const StaffLogin = () => {
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
+        accessibilityLabel="Email address"
+        textContentType="emailAddress"
+        autoComplete="email"
       />
       <TextInput
         style={styles.input}
@@ -72,12 +72,17 @@ const StaffLogin = () => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        accessibilityLabel="Password"
+        textContentType="password"
+        autoComplete="password"
       />
       <TouchableOpacity
         style={[styles.loginButton, loggingIn && { opacity: 0.7 }]}
         onPress={handleLogin}
         activeOpacity={0.6}
-        disabled={loggingIn}>
+        disabled={loggingIn}
+        accessibilityLabel={loggingIn ? 'Logging in' : 'Log in'}
+        accessibilityRole="button">
         {loggingIn ? (
           <ActivityIndicator color="white" />
         ) : (

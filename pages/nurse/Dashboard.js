@@ -11,11 +11,9 @@ import Header from '../../components/Header';
 import PatientButton from '../../components/PatientButton';
 import EmptyState from '../../components/EmptyState';
 import { useNavigation } from '@react-navigation/native';
-import { db } from '../../Firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import { Color, FontFamily, Shadows } from '../../GlobalStyles';
 import { ROUTES } from '../../constants/routes';
-import { COLLECTIONS } from '../../constants/collections';
+import { getPatients } from '../../services/firestore';
 
 const Dashboard = () => {
   const navigation = useNavigation();
@@ -29,12 +27,7 @@ const Dashboard = () => {
       try {
         setLoading(true);
         setError(null);
-        const querySnapshot = await getDocs(collection(db, COLLECTIONS.USERS));
-        const patientList = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().name || 'Unknown',
-          image: doc.data().image
-        }));
+        const patientList = await getPatients();
         patientList.sort((a, b) => a.name.localeCompare(b.name));
         setPatients(patientList);
       } catch (err) {
@@ -58,10 +51,6 @@ const Dashboard = () => {
     });
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-  };
-
   return (
     <View style={styles.container}>
       <Header
@@ -77,7 +66,7 @@ const Dashboard = () => {
                 style={styles.searchBar}
                 placeholder="Search..."
                 value={searchQuery}
-                onChangeText={handleSearch}
+                onChangeText={setSearchQuery}
               />
             </View>
 
@@ -186,13 +175,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 20
   },
-  emptyText: {
-    fontSize: 16,
-    fontFamily: FontFamily.nunitoRegular,
-    color: Color.textGray,
-    textAlign: 'center',
-    paddingHorizontal: 20
-  }
 });
 
 export default Dashboard;

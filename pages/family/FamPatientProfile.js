@@ -66,13 +66,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginLeft: 24
   },
-  emptyText: {
-    fontSize: 16,
-    fontFamily: FontFamily.nunitoRegular,
-    color: Color.textGray,
-    textAlign: 'center',
-    marginTop: 40
-  },
   activityContainerPosts: {
     marginTop: 10,
     marginBottom: 40,

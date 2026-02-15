@@ -8,14 +8,11 @@ import {
   Alert
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import Header from '../../components/Header';
-import NavBar from '../../components/NavBar';
 import ActivityCard from '../../components/ActivityCard';
 import AddActivityModal from '../../components/AddActivityModal';
 import Divider from '../../components/Divider';
 import LoadingState from '../../components/LoadingState';
 import ErrorState from '../../components/ErrorState';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { Color, FontFamily, Shadows } from '../../GlobalStyles';
 import EmptyState from '../../components/EmptyState';
 import { ROUTES } from '../../constants/routes';
@@ -79,7 +76,9 @@ export const PatientProfileContent = ({ patientName, patientId, navigation }) =>
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => setModalVisible(true)}
-        activeOpacity={0.6}>
+        activeOpacity={0.6}
+        accessibilityLabel="Add new activity"
+        accessibilityRole="button">
         <MaterialIcons name="add" size={40} color="white" />
       </TouchableOpacity>
 
@@ -140,36 +139,7 @@ export const PatientProfileContent = ({ patientName, patientId, navigation }) =>
   );
 };
 
-const PatientProfile = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { patientName, patientId } = route.params;
-
-  return (
-    <View style={styles.fullScreenContainer}>
-      <Header
-        headerName={patientName}
-        leftIconName={'grid'}
-        rightIconName={'person-circle-outline'}
-      />
-      <View style={styles.activityContainer}>
-        <PatientProfileContent patientName={patientName} patientId={patientId} navigation={navigation} />
-      </View>
-      <NavBar
-        navigation={navigation}
-        patientName={patientName}
-        patientId={patientId}
-        specialIcon="house"
-      />
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
-  fullScreenContainer: {
-    flex: 1,
-    backgroundColor: Color.blue
-  },
   contentWrapper: {
     flex: 1
   },
@@ -190,13 +160,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 30,
     marginLeft: 15
-  },
-  emptyText: {
-    fontSize: 16,
-    fontFamily: FontFamily.nunitoRegular,
-    color: Color.textGray,
-    textAlign: 'center',
-    marginTop: 40
   },
   activityContainerPosts: {
     marginTop: 10,
@@ -248,4 +211,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PatientProfile;
+export default PatientProfileContent;
