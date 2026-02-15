@@ -24,6 +24,7 @@ export const EditInfoContent = ({ patientName, patientId }) => {
   const [room, setRoom] = useState('');
   const [notes, setNotes] = useState('');
   const [emergencyContact, setEmergencyContact] = useState('');
+  const [familyEmail, setFamilyEmail] = useState('');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -38,6 +39,7 @@ export const EditInfoContent = ({ patientName, patientId }) => {
           setRoom(data.room || '');
           setNotes(data.notes || '');
           setEmergencyContact(data.emergencyContact || '');
+          setFamilyEmail(data.familyEmail || '');
         }
       } catch (error) {
         console.error('Error fetching patient data:', error);
@@ -63,7 +65,8 @@ export const EditInfoContent = ({ patientName, patientId }) => {
         age: age.trim(),
         room: room.trim(),
         notes: notes.trim(),
-        emergencyContact: emergencyContact.trim()
+        emergencyContact: emergencyContact.trim(),
+        familyEmail: familyEmail.trim().toLowerCase()
       });
       Alert.alert('Saved', 'Patient information updated successfully.');
     } catch (error) {
@@ -120,6 +123,16 @@ export const EditInfoContent = ({ patientName, patientId }) => {
         onChangeText={setEmergencyContact}
         placeholder="Phone number"
         keyboardType="phone-pad"
+      />
+
+      <Text style={styles.label}>Family Member Email</Text>
+      <TextInput
+        style={styles.input}
+        value={familyEmail}
+        onChangeText={setFamilyEmail}
+        placeholder="Family member's login email"
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
 
       <Text style={styles.label}>Notes</Text>

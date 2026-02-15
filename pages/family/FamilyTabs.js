@@ -3,54 +3,58 @@ import { View, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../../components/Header';
 import NavBar from '../../components/NavBar';
-import { PatientProfileContent } from './PatientProfile';
-import { CallsContent } from './Calls';
-import { MoodContent } from './Mood';
-import { EditInfoContent } from './EditInfo';
+import { FamActivitiesContent } from './FamPatientProfile';
+import { CallsContent } from '../nurse/Calls';
+import { MoodContent } from '../nurse/Mood';
 import { Color, Shadows } from '../../GlobalStyles';
+import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../constants/routes';
 
+const FAMILY_TABS = [
+  { name: 'Activities', icon: 'house', iconSet: 'FontAwesome6', label: 'Activities' },
+  { name: 'Appointments', icon: 'calendar', iconSet: 'Ionicons', label: 'Appointments' },
+  { name: 'Mood', icon: 'chart-line', iconSet: 'FontAwesome6', label: 'Mood tracking' },
+];
+
 const TAB_TO_ICON = {
-  PatientProfile: 'house',
-  Calls: 'calendar',
+  Activities: 'house',
+  Appointments: 'calendar',
   Mood: 'chart-line',
-  EditInfo: 'person-sharp'
 };
 
-const PatientTabs = () => {
+const FamilyTabs = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { patientName, patientId } = route.params;
-  const [activeTab, setActiveTab] = useState('PatientProfile');
+  const { logout } = useAuth();
+  const [activeTab, setActiveTab] = useState('Activities');
 
-  const formatShortName = (fullName) => {
-    const parts = fullName.split(' ');
-    if (parts.length < 2) return fullName;
-    return `${parts[0]} ${parts[parts.length - 1][0]}.`;
+  const handleLogout = async () => {
+    await logout();
+    navigation.reset({ index: 0, routes: [{ name: ROUTES.START }] });
   };
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'PatientProfile':
-        return <PatientProfileContent patientName={patientName} patientId={patientId} navigation={navigation} />;
-      case 'Calls':
+      case 'Activities':
+        return <FamActivitiesContent patientName={patientName} patientId={patientId} />;
+      case 'Appointments':
         return <CallsContent patientName={patientName} patientId={patientId} />;
       case 'Mood':
         return <MoodContent patientName={patientName} patientId={patientId} />;
-      case 'EditInfo':
-        return <EditInfoContent patientName={patientName} patientId={patientId} />;
       default:
-        return <PatientProfileContent patientName={patientName} patientId={patientId} navigation={navigation} />;
+        return <FamActivitiesContent patientName={patientName} patientId={patientId} />;
     }
   };
 
   return (
     <View style={styles.container}>
       <Header
-        headerName={formatShortName(patientName)}
-        leftIconName={'chatbubble-ellipses'}
-        rightIconName={'person-circle-outline'}
+        headerName="Family View"
+        leftIconName="chatbubble-ellipses"
+        rightIconName="log-out-outline"
         onLeftPress={() => navigation.navigate(ROUTES.CHAT, { patientName, patientId })}
+        onRightPress={handleLogout}
       />
       <View style={styles.contentShadow}>
         {renderContent()}
@@ -58,8 +62,10 @@ const PatientTabs = () => {
       <NavBar
         navigation={navigation}
         patientName={patientName}
+        patientId={patientId}
         specialIcon={TAB_TO_ICON[activeTab]}
         onTabChange={setActiveTab}
+        tabs={FAMILY_TABS}
       />
     </View>
   );
@@ -79,4 +85,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PatientTabs;
+export default FamilyTabs;

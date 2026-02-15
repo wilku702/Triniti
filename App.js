@@ -13,7 +13,8 @@ import Dashboard from './pages/nurse/Dashboard';
 import PatientTabs from './pages/nurse/PatientTabs';
 import Activity from './pages/nurse/Activity';
 import AccountSettings from './pages/AccountSettings';
-import FamPatientProfile from './pages/family/FamPatientProfile';
+import FamilyTabs from './pages/family/FamilyTabs';
+import Chat from './pages/Chat';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,7 +43,8 @@ const App = () => {
           <Stack.Screen name={ROUTES.PATIENT_TABS} component={PatientTabs} />
           <Stack.Screen name={ROUTES.ACTIVITY} component={Activity} />
           <Stack.Screen name={ROUTES.ACCOUNT_SETTINGS} component={AccountSettings} />
-          <Stack.Screen name={ROUTES.FAM_PATIENT_PROFILE} component={FamPatientProfile} />
+          <Stack.Screen name={ROUTES.FAMILY_TABS} component={FamilyTabs} />
+          <Stack.Screen name={ROUTES.CHAT} component={Chat} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

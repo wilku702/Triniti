@@ -7,4 +7,6 @@ export const ROUTES = {
   ACTIVITY: 'Activity',
   ACCOUNT_SETTINGS: 'AccountSettings',
   FAM_PATIENT_PROFILE: 'FamPatientProfile',
+  FAMILY_TABS: 'FamilyTabs',
+  CHAT: 'Chat',
 };

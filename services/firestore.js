@@ -7,6 +7,7 @@ import {
   deleteDoc,
   doc,
   query,
+  where,
   orderBy,
   Timestamp
 } from 'firebase/firestore';
@@ -83,6 +84,28 @@ export const addMoodEntry = async (patientId, entryData) => {
   const ref = collection(db, COLLECTIONS.USERS, patientId, COLLECTIONS.MOOD_ENTRIES);
   const docRef = await addDoc(ref, entryData);
   return docRef.id;
+};
+
+// --- Family Linking ---
+
+export const getPatientByFamilyUid = async (familyUid) => {
+  const q = query(collection(db, COLLECTIONS.USERS), where('familyUid', '==', familyUid));
+  const snapshot = await getDocs(q);
+  if (snapshot.empty) return null;
+  const patientDoc = snapshot.docs[0];
+  return { id: patientDoc.id, ...patientDoc.data() };
+};
+
+export const getPatientByFamilyEmail = async (email) => {
+  const q = query(collection(db, COLLECTIONS.USERS), where('familyEmail', '==', email));
+  const snapshot = await getDocs(q);
+  if (snapshot.empty) return null;
+  const patientDoc = snapshot.docs[0];
+  return { id: patientDoc.id, ...patientDoc.data() };
+};
+
+export const linkFamilyToPatient = async (patientId, familyUid) => {
+  await updateDoc(doc(db, COLLECTIONS.USERS, patientId), { familyUid });
 };
 
 // --- Helpers ---

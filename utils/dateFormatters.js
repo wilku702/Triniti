@@ -42,3 +42,21 @@ export const getTodayKey = () => {
 export const getFirstName = (fullName) => {
   return fullName ? fullName.split(' ')[0] : '';
 };
+
+export const formatChatTimestamp = (timestamp) => {
+  if (!timestamp) return '';
+  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  const timeStr = date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+
+  if (diffDays === 0) return timeStr;
+  if (diffDays === 1) return `Yesterday ${timeStr}`;
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + timeStr;
+};

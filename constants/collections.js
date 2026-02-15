@@ -3,4 +3,5 @@ export const COLLECTIONS = {
   ACTIVITIES: 'activities',
   APPOINTMENTS: 'appointments',
   MOOD_ENTRIES: 'moodEntries',
+  MESSAGES: 'messages',
 };

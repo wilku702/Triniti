@@ -9,12 +9,10 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../Firebase';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../constants/routes';
-import { COLLECTIONS } from '../../constants/collections';
 import { validateLoginFields } from '../../utils/validation';
+import { getPatientByFamilyUid, getPatientByFamilyEmail, linkFamilyToPatient } from '../../services/firestore';
 import { Color, FontFamily } from '../../GlobalStyles';
 
 const FamilyLogin = () => {
@@ -35,17 +33,23 @@ const FamilyLogin = () => {
     try {
       const credential = await login(email.trim(), password, 'family');
       const uid = credential.user.uid;
+      const userEmail = credential.user.email;
 
-      // Look up the patient linked to this family member's UID
-      const usersRef = collection(db, COLLECTIONS.USERS);
-      const q = query(usersRef, where('familyUid', '==', uid));
-      const snapshot = await getDocs(q);
+      // Try fast path: UID-based lookup
+      let patient = await getPatientByFamilyUid(uid);
 
-      if (!snapshot.empty) {
-        const patientDoc = snapshot.docs[0];
-        navigation.navigate(ROUTES.FAM_PATIENT_PROFILE, {
-          patientName: patientDoc.data().name,
-          patientId: patientDoc.id
+      // Fallback: email-based lookup, then auto-link UID for future logins
+      if (!patient && userEmail) {
+        patient = await getPatientByFamilyEmail(userEmail);
+        if (patient) {
+          await linkFamilyToPatient(patient.id, uid);
+        }
+      }
+
+      if (patient) {
+        navigation.navigate(ROUTES.FAMILY_TABS, {
+          patientName: patient.name,
+          patientId: patient.id
         });
       } else {
         Alert.alert('Error', 'No patient is linked to this account. Please contact your facility.');

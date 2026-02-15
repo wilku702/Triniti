@@ -5,6 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 import { Color, FontFamily } from '../GlobalStyles';
 import { ROUTES } from '../constants/routes';
 
+const ICON_LABELS = {
+  'grid': 'Go to dashboard',
+  'chatbubble-ellipses': 'Open chat',
+  'person-circle-outline': 'Account settings',
+  'log-out-outline': 'Log out',
+};
+
 const Header = ({ headerName, leftIconName, rightIconName, onLeftPress, onRightPress }) => {
   const navigation = useNavigation();
 
@@ -16,7 +23,7 @@ const Header = ({ headerName, leftIconName, rightIconName, onLeftPress, onRightP
       <TouchableOpacity
         onPress={handleLeftPress}
         activeOpacity={0.6}
-        accessibilityLabel="Go to dashboard"
+        accessibilityLabel={ICON_LABELS[leftIconName] || 'Navigate'}
         accessibilityRole="button">
         <Ionicons
           style={styles.leftIcon}
@@ -33,7 +40,7 @@ const Header = ({ headerName, leftIconName, rightIconName, onLeftPress, onRightP
       <TouchableOpacity
         onPress={handleRightPress}
         activeOpacity={0.6}
-        accessibilityLabel="Account settings"
+        accessibilityLabel={ICON_LABELS[rightIconName] || 'Settings'}
         accessibilityRole="button">
         <Ionicons
           style={styles.rightIcon}

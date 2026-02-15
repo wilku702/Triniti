@@ -3,57 +3,41 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
 import { Color } from '../GlobalStyles';
 
-const NavBar = ({ navigation, patientName, patientId, specialIcon, onTabChange }) => {
+const DEFAULT_TABS = [
+  { name: 'PatientProfile', icon: 'house', iconSet: 'FontAwesome6', label: 'Home' },
+  { name: 'Calls', icon: 'calendar', iconSet: 'Ionicons', label: 'Appointments' },
+  { name: 'Mood', icon: 'chart-line', iconSet: 'FontAwesome6', label: 'Mood tracking' },
+  { name: 'EditInfo', icon: 'person-sharp', iconSet: 'Ionicons', label: 'Patient info' },
+];
+
+const NavBar = ({ navigation, patientName, patientId, specialIcon, onTabChange, tabs = DEFAULT_TABS }) => {
   const getIconColor = (iconName) => {
     return iconName === specialIcon ? Color.navActive : Color.navDefault;
   };
 
-  const handlePress = (tabName, routeName) => {
+  const handlePress = (tabName) => {
     if (onTabChange) {
       onTabChange(tabName);
     } else {
-      navigation.navigate(routeName, { patientName, patientId });
+      navigation.navigate(tabName, { patientName, patientId });
     }
   };
 
   return (
     <View style={styles.navbarContainer}>
-      <TouchableOpacity
-        onPress={() => handlePress('PatientProfile', 'PatientProfile')}
-        activeOpacity={0.6}
-        accessibilityLabel="Home"
-        accessibilityRole="tab">
-        <FontAwesome6 name="house" size={40} color={getIconColor('house')} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => handlePress('Calls', 'Calls')}
-        activeOpacity={0.6}
-        accessibilityLabel="Appointments"
-        accessibilityRole="tab">
-        <Ionicons name="calendar" size={40} color={getIconColor('calendar')} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => handlePress('Mood', 'Mood')}
-        activeOpacity={0.6}
-        accessibilityLabel="Mood tracking"
-        accessibilityRole="tab">
-        <FontAwesome6
-          name="chart-line"
-          size={40}
-          color={getIconColor('chart-line')}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => handlePress('EditInfo', 'EditInfo')}
-        activeOpacity={0.6}
-        accessibilityLabel="Patient info"
-        accessibilityRole="tab">
-        <Ionicons
-          name="person-sharp"
-          size={40}
-          color={getIconColor('person-sharp')}
-        />
-      </TouchableOpacity>
+      {tabs.map((tab) => {
+        const IconComponent = tab.iconSet === 'FontAwesome6' ? FontAwesome6 : Ionicons;
+        return (
+          <TouchableOpacity
+            key={tab.name}
+            onPress={() => handlePress(tab.name)}
+            activeOpacity={0.6}
+            accessibilityLabel={tab.label}
+            accessibilityRole="tab">
+            <IconComponent name={tab.icon} size={40} color={getIconColor(tab.icon)} />
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 };
